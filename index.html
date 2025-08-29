@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴먼에러 확률(HEP) 평가도구</title>
+    <style>
+        /* 기본 스타일 및 레이아웃 설정 */
+        :root {
+            --primary-color: #005A9C; /* 전문적인 느낌의 파란색 */
+            --secondary-color: #E8F0F6;
+            --background-color: #F7F9FC;
+            --text-color: #333;
+            --border-color: #DDE3E9;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --danger-color: #D93025;
+            --edit-color: #1A73E8;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px; /* 테이블 확장에 따른 너비 조정 */
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px 30px;
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            padding: 30px;
+        }
+        
+.form-group {
+  margin-bottom: 20px;
+}
+.form-group label {
+  font-size: 18px;
+  font-weight: bold;   
+  color: #005A9C;
+}
+
+
+        /* 버튼 스타일 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-primary {
+            background-color: #FFFFFF;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #FFFFFF;
+        }
+        .btn-danger:hover {
+            opacity: 0.85;
+        }
+        .btn-edit {
+            background-color: var(--edit-color);
+            color: #FFFFFF;
+        }
+        .btn-edit:hover {
+            opacity: 0.85;
+        }
+
+        /* 테이블 및 관리 기능 스타일 */
+        .table-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center; /* 버튼 정렬 */
+            justify-content: flex-start; /* 버튼을 왼쪽으로 정렬 */
+        }
+        .table-controls button {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        .table-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        /* CSV 저장 버튼을 오른쪽으로 옮기기 위한 스타일 */
+        .table-controls .right-aligned-btn {
+            margin-left: auto;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #FDFDFD;
+        }
+        
+        tbody tr.selected {
+            background-color: var(--secondary-color);
+        }
+
+        td.actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        /* 설문 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* 기본 숨김 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #FFFFFF;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 700px; /* 너비 확장 */
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        #no-task-message {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+        
+        /* -- 수정된 부분 시작 -- */
+        /* 작업명 입력란 크기 확대 */
+        #taskNameInput {
+            font-size: 1.0em; 
+            padding: 8px; /* 패딩 조정 */
+        }
+
+        /* 테이블 내용 폰트 크기 축소 */
+        .table-container td {
+            font-size: 70%;
+        }
+        .table-container td:not(:nth-child(2)) {
+            font-size: 70%;
+        }
+        .table-container td:nth-child(2),
+        .table-container td:nth-child(11),
+        .table-container td:nth-child(12) {
+            font-size: 100%;
+            font-weight: bold;
+        }
+        /* -- 수정된 부분 끝 -- */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>휴먼에러 확률(HEP) 평가</h1>
+    </header>
+    <main>
+        <div class="table-controls">
+            <button id="addTaskBtn" class="btn btn-primary" onclick="openSurveyModal()">작업 추가</button>
+            <button id="moveUpBtn" class="btn btn-small" onclick="moveRow('up')" disabled>위로 ▲</button>
+            <button id="moveDownBtn" class="btn btn-small" onclick="moveRow('down')" disabled>아래로 ▼</button>
+        </div>
+        <div class="table-container">
+            <table id="taskTable">
+                <thead>
+                    <tr>
+                        <th>선택</th>
+                        <th>작업명</th>
+                        <th>가능성</th>
+                        <th>중대성</th>
+                        <th>난이도</th>
+                        <th>환경</th>
+                        <th>집중도</th>
+                        <th>절차</th>
+                        <th>시간압박</th>
+                        <th>경험</th>
+                        <th>HEP</th>
+                        <th>성공 확률</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="no-task-message">
+                        <td colspan="13">아직 평가된 작업이 없습니다.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<!-- 설문조사 모달 -->
+<div class="modal-overlay" id="surveyModal">
+    <div class="modal-content">
+        <h1 align="center" id="modalTitle">작업 평가</h1>
+        <form id="hepSurveyForm" onsubmit="submitSurvey(event)">
+            <input type="hidden" id="editingRowId">
+            <div class="form-group">
+                <label for="taskNameInput">▶ 평가할 대상 작업명 : </label>
+                <input type="text" id="taskNameInput" placeholder="예: 밸브 잠금 작업" required>
+            </div>
+            <p></p>
+            <div id="surveyQuestions"></div>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="closeSurveyModal()">취소</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="background-color: var(--primary-color); color: #fff;">추가</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // 설문 질문과 선택지 데이터
+    const surveyData = {
+        difficulty: { question: "3. 수행하려는 작업은 얼마나 어렵습니까?", options: ["매우 쉬움", "쉬움", "보통", "어려움", "매우 어려움"] },
+        environment: { question: "4. 작업 환경(소음, 조명, 공간 등)은 얼마나 쾌적합니까?", options: ["매우 쾌적함", "쾌적함", "보통", "불편함", "매우 불편함"] },
+        attention: { question: "5. 이 작업을 수행하는 데 어느 정도의 집중력이 필요합니까?", options: ["거의 불필요", "조금 필요", "보통", "높은 집중", "최고 수준"] },
+        procedure: { question: "6. 작업 절차나 지침은 얼마나 명확하고 이해하기 쉽습니까?", options: ["매우 명확함", "명확함", "보통", "불명확함", "매우 불명확함"] },
+        timePressure: { question: "7. 주어진 시간 안에 작업을 완료해야 한다는 압박감을 얼마나 느끼십니까?", options: ["전혀 없음", "조금 느낌", "보통", "많이 느낌", "매우 많이 느낌"] },
+        experience: { question: "8. 이 작업 또는 유사한 작업에 대한 경험은 얼마나 충분합니까?", options: ["매우 충분함", "충분함", "보통", "부족함", "매우 부족함"] },
+        likelihood: { question: "1. 이 작업에서 사고가 발생할 가능성(빈도)은 얼마나 됩니까?", options: ["매우 낮음", "낮음", "보통", "높음", "매우 높음"] },
+        severity: { question: "2. 만약 사고가 발생한다면, 그 결과(인적/물적 피해)는 얼마나 심각합니까?", options: ["경미함", "주의 필요", "심각함", "치명적", "재앙적"] }
+    };
+
+    // 기본 HEP 계산을 위한 가중치 (최소, 최대)
+    const hepWeights = {
+        difficulty: [0.001, 0.1],
+        environment: [0.001, 0.15],
+        attention: [0.001, 0.1],
+        procedure: [0.001, 0.2],
+        timePressure: [0.001, 0.18],
+        // *** 수정된 부분: 경험이 많으면(1점) HEP가 낮고(0.001), 부족하면(5점) 높도록(0.2) 수정
+        experience: [0.001, 0.2]
+    };
+    
+    // 가능성 및 중대성 가중치 승수
+    const riskMultipliers = {
+        likelihood: [0.8, 1.0, 1.2, 1.5, 2.0],
+        severity: [0.8, 1.0, 1.5, 2.5, 3.5]
+    };
+
+    function scaleEPC(value, minHEP, maxHEP) {
+        const ratio = (value - 1) / 4;
+        return minHEP + ratio * (maxHEP - minHEP);
+    }
+    
+    function generateSurveyQuestions() {
+        const questionsContainer = document.getElementById('surveyQuestions');
+        let html = '';
+        const order = ['likelihood', 'severity', 'difficulty', 'environment', 'attention', 'procedure', 'timePressure', 'experience'];
+        
+        order.forEach(key => {
+            const item = surveyData[key];
+            html += `<fieldset class="question-group" style="margin-bottom: 20px; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; font-size:17px;">`;
+            html += `<legend style="font-weight: 600; padding: 0 10px; margin-left: 10px;">${item.question}</legend>`;
+            html += `<div class="radio-options" style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">`;
+            item.options.forEach((option, index) => {
+                const value = index + 1;
+                html += `
+                    <input type="radio" id="${key}-${value}" name="${key}" value="${value}" style="display: none;">
+                    <label for="${key}-${value}" style="display: block; padding: 10px 15px; border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all 0.2s ease; font-weight: 500; flex-grow: 1; text-align: center;">${option}</label>
+                `;
+            });
+            html += `</div></fieldset>`;
+        });
+        questionsContainer.innerHTML = html;
+        // 라디오 버튼 스타일링을 위한 이벤트 리스너 추가
+        document.querySelectorAll('.radio-options input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                // 같은 그룹의 모든 라벨 스타일 초기화
+                document.querySelectorAll(`input[name="${e.target.name}"]`).forEach(r => {
+                    r.nextElementSibling.style.backgroundColor = '';
+                    r.nextElementSibling.style.color = '';
+                    r.nextElementSibling.style.borderColor = '';
+                });
+                // 선택된 라디오의 라벨에만 스타일 적용
+                if(e.target.checked) {
+                    const label = e.target.nextElementSibling;
+                    label.style.backgroundColor = 'var(--primary-color)';
+                    label.style.color = '#FFFFFF';
+                    label.style.borderColor = 'var(--primary-color)';
+                }
+            });
+        });
+    }
+
+    function submitSurvey(event) {
+        event.preventDefault();
+        const editingRowId = document.getElementById('editingRowId').value;
+        const taskName = document.getElementById('taskNameInput').value;
+        const formData = new FormData(event.target);
+        const values = { name: taskName };
+        
+        const keys = ['likelihood', 'severity', 'difficulty', 'environment', 'attention', 'procedure', 'timePressure', 'experience'];
+        for (const key of keys) {
+            const value = formData.get(key);
+            if (!value) {
+                alert("모든 질문에 답변해주세요.");
+                return;
+            }
+            values[key] = parseInt(value);
+        }
+
+        const baseHepValues = {};
+        const hepKeys = ['difficulty', 'environment', 'attention', 'procedure', 'timePressure', 'experience'];
+        for (const key of hepKeys) {
+            baseHepValues[key] = scaleEPC(values[key], hepWeights[key][0], hepWeights[key][1]);
+        }
+        const baseHEP = Math.pow(Object.values(baseHepValues).reduce((a, b) => a * b, 1), 1 / 6);
+        const finalHEP = Math.min(Math.max(baseHEP * riskMultipliers.likelihood[values.likelihood - 1] * riskMultipliers.severity[values.severity - 1], 0.001), 1.0);
+        values.hep = finalHEP.toFixed(3);
+        // 성공 확률 계산
+        values.successProbability = (1.0 - parseFloat(values.hep)).toFixed(3);
+
+        if (editingRowId) {
+            updateTaskInTable(document.getElementById(editingRowId), values);
+        } else {
+            addTaskToTable(values);
+        }
+        closeSurveyModal();
+    }
+
+    function addTaskToTable(taskData) {
+        const tableBody = document.getElementById('taskTable').querySelector('tbody');
+        const noTaskMessage = document.getElementById('no-task-message');
+        if (noTaskMessage) noTaskMessage.remove();
+
+        const newRow = tableBody.insertRow();
+        newRow.id = `task-${Date.now()}`;
+        updateTaskInTable(newRow, taskData);
+    }
+
+    function updateTaskInTable(row, taskData) {
+        // 데이터 속성으로 모든 값 저장
+        for (const key in taskData) {
+            row.dataset[key] = taskData[key];
+        }
+        
+        // 가능성과 중대성을 선택 내용으로 변환
+        const likelihoodText = surveyData.likelihood.options[taskData.likelihood - 1];
+        const severityText = surveyData.severity.options[taskData.severity - 1];
+
+        row.innerHTML = `
+            <td><input type="checkbox" name="task_select" onchange="handleCheckboxChange(this)"></td>
+            <td>${taskData.name}</td>
+            <td>${likelihoodText}</td>
+            <td>${severityText}</td>
+            <td>${surveyData.difficulty.options[taskData.difficulty - 1]}</td>
+            <td>${surveyData.environment.options[taskData.environment - 1]}</td>
+            <td>${surveyData.attention.options[taskData.attention - 1]}</td>
+            <td>${surveyData.procedure.options[taskData.procedure - 1]}</td>
+            <td>${surveyData.timePressure.options[taskData.timePressure - 1]}</td>
+            <td>${surveyData.experience.options[taskData.experience - 1]}</td>
+            <td><strong>${taskData.hep}</strong></td>
+            <td><strong>${taskData.successProbability}</strong></td>
+            <td class="actions">
+                <button class="btn btn-small btn-edit" onclick="editTask(this)">수정</button>
+                <button class="btn btn-small btn-danger" onclick="deleteTask(this)">삭제</button>
+            </td>
+        `;
+    }
+
+    function editTask(button) {
+        const row = button.closest('tr');
+        openSurveyModal(row);
+    }
+
+    function deleteTask(button) {
+        const row = button.closest('tr');
+        const tableBody = row.parentNode;
+        row.remove();
+        
+        if (tableBody.rows.length === 0) {
+            tableBody.innerHTML = `<tr id="no-task-message"><td colspan="13">아직 평가된 작업이 없습니다.</td></tr>`;
+        }
+        updateMoveButtonsState();
+    }
+    
+    function openSurveyModal(row = null) {
+        const form = document.getElementById('hepSurveyForm');
+        form.reset();
+        document.getElementById('editingRowId').value = '';
+        
+        // 모든 라벨 스타일 초기화
+        document.querySelectorAll('.radio-options label').forEach(label => {
+            label.style.backgroundColor = '';
+            label.style.color = '';
+            label.style.borderColor = '';
+        });
+
+        if (row) { // 수정 모드
+            document.getElementById('modalTitle').textContent = '작업 평가 수정';
+            document.getElementById('submitBtn').textContent = '수정 완료';
+            document.getElementById('editingRowId').value = row.id;
+            document.getElementById('taskNameInput').value = row.dataset.name;
+            for (const key in surveyData) {
+                const value = row.dataset[key];
+                if (value) {
+                    const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change')); // 스타일 적용을 위해 이벤트 트리거
+                    }
+                }
+            }
+        } else { // 생성 모드
+            document.getElementById('modalTitle').textContent = '작업 평가';
+            document.getElementById('submitBtn').textContent = '추가하기';
+            // 기본값(보통)으로 체크 및 스타일 적용
+            for (const key in surveyData) {
+                const radio = form.querySelector(`input[name="${key}"][value="3"]`);
+                if (radio) {
+                    radio.checked = true;
+                    radio.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+        document.getElementById('surveyModal').style.display = 'flex';
+    }
+
+    function closeSurveyModal() {
+        document.getElementById('surveyModal').style.display = 'none';
+    }
+
+    function handleCheckboxChange(checkbox) {
+        // 하나만 선택되도록 처리
+        document.querySelectorAll('input[name="task_select"]').forEach(cb => {
+            if (cb !== checkbox) cb.checked = false;
+        });
+        updateMoveButtonsState();
+    }
+
+    function updateMoveButtonsState() {
+        const checkedBox = document.querySelector('input[name="task_select"]:checked');
+        const moveUpBtn = document.getElementById('moveUpBtn');
+        const moveDownBtn = document.getElementById('moveDownBtn');
+
+        document.querySelectorAll('tbody tr').forEach(row => row.classList.remove('selected'));
+
+        if (!checkedBox) {
+            moveUpBtn.disabled = true;
+            moveDownBtn.disabled = true;
+            return;
+        }
+        
+        const row = checkedBox.closest('tr');
+        row.classList.add('selected');
+        moveUpBtn.disabled = !row.previousElementSibling;
+        moveDownBtn.disabled = !row.nextElementSibling;
+    }
+
+    function moveRow(direction) {
+        const checkedBox = document.querySelector('input[name="task_select"]:checked');
+        if (!checkedBox) return;
+
+        const row = checkedBox.closest('tr');
+        if (direction === 'up' && row.previousElementSibling) {
+            row.parentNode.insertBefore(row, row.previousElementSibling);
+        } else if (direction === 'down' && row.nextElementSibling) {
+            row.parentNode.insertBefore(row.nextElementSibling, row);
+        }
+        updateMoveButtonsState();
+    }
+    
+    // 테이블 내용을 CSV로 저장하는 함수
+    function saveTableAsCsv() {
+        const table = document.getElementById('taskTable');
+        const rows = table.querySelectorAll('tbody tr');
+        let csv = "작업 단계,성공 확률\n";
+        
+        rows.forEach(row => {
+            // "아직 평가된 작업이 없습니다" 메시지 행 제외
+            if (row.id === 'no-task-message') return;
+
+            const taskName = `"${row.dataset.name.replace(/"/g, '""')}"`;
+            const successProbability = row.dataset.successProbability;
+            
+            csv += `${taskName},${successProbability}\n`;
+        });
+        
+        const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' }); // BOM 추가
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'hep_results.csv';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // 페이지 로드 시 초기화
+    document.addEventListener('DOMContentLoaded', () => {
+        generateSurveyQuestions();
+    });
+
+</script>
+</body>
+</html>
