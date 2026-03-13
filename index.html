@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>휴먼에러 확률(HEP) 평가도구 (관리기능 추가)</title>
+    <title>휴먼에러 확률(HEP) 평가도구</title>
     <!-- Chart.js 라이브러리 추가 -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -415,26 +415,28 @@
         /* 모바일: 작업명(2), HEP(11), 관리(13)만 표시, 나머지 숨김 */
         @media (max-width: 768px) {
 
-            #taskTable th:nth-child(3),
-            #taskTable td:nth-child(3),
-            #taskTable th:nth-child(4),
-            #taskTable td:nth-child(4),
-            #taskTable th:nth-child(5),
-            #taskTable td:nth-child(5),
-            #taskTable th:nth-child(6),
-            #taskTable td:nth-child(6),
-            #taskTable th:nth-child(7),
-            #taskTable td:nth-child(7),
-            #taskTable th:nth-child(8),
-            #taskTable td:nth-child(8),
-            #taskTable th:nth-child(9),
-            #taskTable td:nth-child(9),
-            #taskTable th:nth-child(10),
-            #taskTable td:nth-child(10),
-            #taskTable th:nth-child(12),
-            #taskTable td:nth-child(12) {
-                display: none;
-            }
+            #taskTable th:nth-child(1),
+    #taskTable td:nth-child(1),
+    #taskTable th:nth-child(3),
+    #taskTable td:nth-child(3),
+    #taskTable th:nth-child(4),
+    #taskTable td:nth-child(4),
+    #taskTable th:nth-child(5),
+    #taskTable td:nth-child(5),
+    #taskTable th:nth-child(6),
+    #taskTable td:nth-child(6),
+    #taskTable th:nth-child(7),
+    #taskTable td:nth-child(7),
+    #taskTable th:nth-child(8),
+    #taskTable td:nth-child(8),
+    #taskTable th:nth-child(9),
+    #taskTable td:nth-child(9),
+    #taskTable th:nth-child(10),
+    #taskTable td:nth-child(10),
+    #taskTable th:nth-child(12),
+    #taskTable td:nth-child(12) {
+        display: none;
+    }
 
             #managePsfBtn,
             #manageSelectedTasksBtn,
@@ -479,7 +481,7 @@
 
     <div class="container">
         <header>
-            <h1>휴먼에러 확률(HEP) 평가 (관리기능 추가)</h1>
+            <h1>휴먼에러 확률(HEP) 평가</h1>
         </header>
         <main>
             <div class="table-controls">
@@ -804,7 +806,7 @@
         function openSurveyModal(row = null) {
             const form = document.getElementById('hepSurveyForm'); form.reset(); document.getElementById('editingRowId').value = ''; document.querySelectorAll('.survey-option-label').forEach(label => { label.style.backgroundColor = ''; label.style.color = ''; label.style.borderColor = '#ccc'; });
             if (row) {
-                document.getElementById('modalTitle').textContent = '기 입력된 작업에 대한 평가 수정'; document.getElementById('submitBtn').textContent = '수정 완료'; document.getElementById('editingRowId').value = row.id; document.getElementById('taskNameInput').value = row.dataset.name;
+                document.getElementById('modalTitle').textContent = '기 입력된 작업 수정'; document.getElementById('submitBtn').textContent = '수정 완료'; document.getElementById('editingRowId').value = row.id; document.getElementById('taskNameInput').value = row.dataset.name;
 
                 for (const key in surveyData) {
                     const value = row.dataset[key];
