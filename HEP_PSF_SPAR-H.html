@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴먼에러 확률(HEP) 평가도구 (관리기능 추가)</title>
+    <!-- Chart.js 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 기본 스타일 및 레이아웃 설정 (사용자 요청에 따라 기본 스타일만 사용) */
+        :root {
+            --primary-color: #005A9C;
+            --secondary-color: #E8F0F6;
+            --background-color: #F7F9FC;
+            --text-color: #333;
+            --border-color: #DDE3E9;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --danger-color: #D93025;
+            --edit-color: #1A73E8;
+            --success-color: #28a745;
+            --purple-color: #8A2BE2;
+            --orange-color: #fd7e14;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            /* 테이블 확장에 따른 너비 조정 */
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px 30px;
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            /* 라벨과 입력창을 한 줄에 배치 */
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #005A9C;
+            white-space: nowrap;
+            /* 라벨 줄바꿈 방지 */
+        }
+
+
+        /* 버튼 스타일 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-primary {
+            background-color: #FFFFFF;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #FFFFFF;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.85;
+        }
+
+        .btn-edit {
+            background-color: var(--edit-color);
+            color: #FFFFFF;
+        }
+
+        .btn-edit:hover {
+            opacity: 0.85;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.85;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 테이블 및 관리 기능 스타일 */
+        .table-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            /* 버튼 정렬 */
+            justify-content: flex-start;
+            /* 버튼을 왼쪽으로 정렬 */
+            flex-wrap: wrap;
+            /* 버튼이 많아지면 줄바꿈 */
+        }
+
+        .table-controls button {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .table-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+            word-break: keep-all;
+            /* 한글 단어 단위로 줄바꿈 */
+            white-space: nowrap;
+            /* 기본적으로 줄바꿈 없이 유지 */
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #FDFDFD;
+        }
+
+        tbody tr.selected {
+            background-color: var(--secondary-color);
+        }
+
+        td.actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        /* 설문 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            /* 기본 숨김 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #FFFFFF;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 960px;
+            max-height: 90vh;
+            overflow-y: auto;
+            font-size: 1rem;
+        }
+
+        #no-task-message {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
+        /* -- 수정된 부분 시작 -- */
+        /* 작업명 입력란 크기 확대 */
+        #taskNameInput {
+            font-size: 1.0em;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            flex: 1;
+            /* 남은 공간을 입력창이 채움 */
+            min-width: 0;
+            /* flex 환경에서 넘침 방지 */
+        }
+
+        /* 테이블 내용 폰트 크기 축소 */
+        .table-container td {
+            font-size: 70%;
+        }
+
+        .table-container td:not(:nth-child(2)) {
+            font-size: 90%;
+        }
+
+        .table-container td:nth-child(2),
+        .table-container td:nth-child(11),
+        .table-container td:nth-child(12) {
+            font-size: 100%;
+            font-weight: bold;
+        }
+
+        /* 모달 내 테이블 글씨 크기 조정 */
+        .modal-content table th,
+        .modal-content table td {
+            font-size: 1rem;
+        }
+
+        /* 새로 추가된 스타일 */
+        .survey-modal-header {
+            font-size: 1rem;
+            color: red;
+            font-weight: 550;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .survey-modal-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #555;
+            margin: 0;
+        }
+
+        .survey-card {
+            background-color: #F8F9FA;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .survey-card-question {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .survey-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .survey-option-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: 1px solid #ccc;
+        }
+
+        .survey-option-input {
+            display: none;
+        }
+
+        .survey-option-input:checked+.survey-option-label {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .modal-content .modal-actions {
+            justify-content: center;
+        }
+
+        .modal-content #submitBtn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+        }
+
+        /* 관리 차트 모달 스타일 */
+        #managementStats div {
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            flex-basis: 23%;
+            /* 4개의 항목이므로 */
+        }
+
+        #managementStats .stat-avg {
+            color: var(--primary-color);
+        }
+
+        #managementStats .stat-ucl {
+            color: var(--danger-color);
+        }
+
+        #managementStats .stat-lcl {
+            color: var(--success-color);
+        }
+
+        /* [요청사항] 드롭다운 메뉴 스타일 */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            /* 다른 모달보다 위에 오도록 z-index 조정 */
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .show {
+            display: block;
+        }
+
+        #fileMenuBtn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            font-size: 1.2em;
+            font-weight: bold;
+            line-height: 1;
+            padding: 6px 10px;
+        }
+
+        #fileMenuBtn:hover {
+            background-color: var(--secondary-color);
+        }
+
+
+        /* 모바일: 작업명(2), HEP(11), 관리(13)만 표시, 나머지 숨김 */
+        @media (max-width: 768px) {
+
+            #taskTable th:nth-child(3),
+            #taskTable td:nth-child(3),
+            #taskTable th:nth-child(4),
+            #taskTable td:nth-child(4),
+            #taskTable th:nth-child(5),
+            #taskTable td:nth-child(5),
+            #taskTable th:nth-child(6),
+            #taskTable td:nth-child(6),
+            #taskTable th:nth-child(7),
+            #taskTable td:nth-child(7),
+            #taskTable th:nth-child(8),
+            #taskTable td:nth-child(8),
+            #taskTable th:nth-child(9),
+            #taskTable td:nth-child(9),
+            #taskTable th:nth-child(10),
+            #taskTable td:nth-child(10),
+            #taskTable th:nth-child(12),
+            #taskTable td:nth-child(12) {
+                display: none;
+            }
+
+            #managePsfBtn,
+            #manageSelectedTasksBtn,
+            #selectAllBtn,
+            #deselectAllBtn,
+            .dropdown {
+                display: none;
+            }
+
+            #moveUpBtn,
+            #moveDownBtn {
+                display: none;
+            }
+
+            /* 모달 너비 모바일 대응 */
+            .modal-content {
+                width: 98%;
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+
+            /* survey-card를 세로 레이아웃으로 전환 */
+            .survey-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .survey-options {
+                flex-wrap: wrap;
+                margin-top: 8px;
+            }
+
+            .survey-option-label {
+                font-size: 0.8em;
+                padding: 4px 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <h1>휴먼에러 확률(HEP) 평가 (관리기능 추가)</h1>
+        </header>
+        <main>
+            <div class="table-controls">
+                <button id="addTaskBtn" class="btn btn-primary" onclick="openSurveyModal()"
+                    style="background:#0b3d91;color:#fff">작업 추가</button>
+                <button id="moveUpBtn" class="btn btn-small" onclick="moveRow('up')" disabled>위로 ▲</button>
+                <button id="moveDownBtn" class="btn btn-small" onclick="moveRow('down')" disabled>아래로 ▼</button>
+                <button id="selectAllBtn" class="btn btn-small" onclick="selectAllTasks()">전체 선택</button>
+                <button id="deselectAllBtn" class="btn btn-small" onclick="deselectAllTasks()">전체 선택 취소</button>
+                <button id="managePsfBtn" class="btn btn-primary" onclick="openPsfManagementModal()"
+                    style="background-color: var(--orange-color); color: white;" disabled>선택작업 PSF 관리</button>
+                <button id="manageSelectedTasksBtn" class="btn btn-primary" onclick="openHepManagementModal()"
+                    style="background-color: var(--purple-color); color: white;" disabled>선택 작업관리</button>
+
+                <!-- [요청사항] 파일 메뉴 버튼 그룹 (드롭다운으로 변경) -->
+                <div class="dropdown" style="margin-left: auto;">
+                    <button id="fileMenuBtn" class="btn btn-small">&#8942;</button> <!-- 세로 점 3개 아이콘 -->
+                    <div id="fileMenuDropdown" class="dropdown-content">
+                        <a href="#"
+                            onclick="document.getElementById('csvFileInput').click(); closeAllDropdowns(); return false;">▷
+                            불러오기</a>
+                        <a href="#" onclick="closeAllDropdowns(); saveAllDataAsCsv(); return false;">▷ 저장하기</a>
+                        <a href="#" onclick="closeAllDropdowns(); saveTableAsCsv(); return false;">▷ 저장하기(THERP용)</a>
+                    </div>
+                </div>
+            </div>
+            <div class="table-container">
+                <table id="taskTable">
+                    <thead>
+                        <tr>
+                            <th>선택</th>
+                            <th>작업명</th>
+                            <th>가용 시간</th>
+                            <th>스트레스</th>
+                            <th>복잡성</th>
+                            <th>경험/훈련</th>
+                            <th>절차서</th>
+                            <th>인간공학</th>
+                            <th>직무 적합성</th>
+                            <th>작업 프로세스</th>
+                            <th>HEP</th>
+                            <th>성공 확률</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="no-task-message">
+                            <td colspan="13">아직 평가된 작업이 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- [요청사항] CSV 파일 불러오기를 위한 숨겨진 input -->
+            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
+        </main>
+    </div>
+
+    <!-- 설문조사 모달 -->
+    <div class="modal-overlay" id="surveyModal">
+        <div class="modal-content">
+            <h1 align="center" id="modalTitle">휴먼에러 요인분석 설문지</h1>
+            <form id="hepSurveyForm" onsubmit="submitSurvey(event)">
+                <input type="hidden" id="editingRowId">
+                <div class="form-group">
+                    <label for="taskNameInput">▶ 평가할 대상 작업명 : </label>
+                    <input type="text" id="taskNameInput" placeholder="예: 밸브 잠금 작업 (빈칸이면 자동 부여)">
+                </div>
+                <p></p>
+                <div id="surveyQuestions"></div>
+                <div class="modal-actions"
+                    style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" class="btn" onclick="closeSurveyModal()">취소</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary"
+                        style="background-color: var(--primary-color); color: #fff;" disabled>추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 선택 작업관리 모달 -->
+    <div class="modal-overlay" id="hepManagementModal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <h2 id="managementModalTitle" style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+                선택 작업 HEP 관리 차트
+            </h2>
+            <div id="managementStats"
+                style="display: flex; justify-content: space-around; margin-bottom: 20px; font-weight: bold; text-align: center;">
+                <!-- 통계 데이터가 여기에 표시됩니다. -->
+            </div>
+            <!-- 차트 구현을 위해 Canvas로 변경 -->
+            <div style="position: relative; height:40vh; width:100%">
+                <canvas id="hepChartCanvas"></canvas>
+            </div>
+            <div id="no-chart-message" style="display: none; text-align: center; padding: 40px; color: #777;">
+                분석할 작업을 선택해주세요.
+            </div>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="closeHepManagementModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 선택작업 PSF 관리 모달 -->
+    <div class="modal-overlay" id="psfManagementModal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+                선택 작업 PSF 요인 분석
+            </h2>
+            <!-- 차트 구현을 위해 Canvas로 변경 -->
+            <div style="position: relative; height:40vh; width:100%">
+                <canvas id="psfChartCanvas"></canvas>
+            </div>
+            <div id="no-psf-chart-message" style="display: none; text-align: center; padding: 40px; color: #777;">
+                분석할 작업을 선택해주세요.
+            </div>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="closePsfManagementModal()">닫기</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+
+        // 차트 인스턴스 전역 변수
+        let hepChartInstance = null;
+        let psfChartInstance = null;
+
+        // PSF별 HEP 기여 가중치 [최소 multiplier, 최대 multiplier]
+        const hepWeights = {
+            available_time: [0.01, 10],
+            stress: [1, 5],
+            complexity: [0.1, 5],
+            experience: [0.5, 10],
+            procedures: [0.5, 50],
+            ergonomics: [0.5, 50],
+            fitness: [0, 5],    // 0 포함
+            work_processes: [0.8, 5]
+        };
+
+        // PSF별 상대적 영향력 가중치 (합계 = 1)
+        const psfInfluenceWeights = {
+            available_time: 0.10,
+            stress: 0.10,
+            complexity: 0.15,
+            experience: 0.15,
+            procedures: 0.20,
+            ergonomics: 0.15,
+            fitness: 0.05,
+            work_processes: 0.10
+        };
+
+        // SPAR-H 기반 8가지 문항 및 배수 데이터로 교체
+        const surveyData = {
+            available_time: { question: "1. 가용 시간 (시간압박 정도)", options: ["불충분한/턱없이 부족", "겨우 맞출 수 있음", "적당히 충분함", "여유 있음", "아주 넉넉함"], d_vals: [0, 10, 1, 0.1, 0.01], a_vals: [0, 10, 1, 0.1, 0.01] },
+            stress: { question: "2. 스트레스 (집중/긴장감)", options: ["극도의 압박", "높은 스트레스", "정상 수준"], d_vals: [5, 2, 1], a_vals: [5, 2, 1] },
+            complexity: { question: "3. 복잡성 (작업 난이도)", options: ["매우 복잡함", "다소 복잡함", "보통", "매우 단순/명백함"], d_vals: [5, 2, 1, 0.1], a_vals: [5, 2, 1, 1] },
+            experience: { question: "4. 경험 / 훈련 (숙련도)", options: ["경험부족/초보", "보통", "숙련된 전문가"], d_vals: [10, 1, 0.5], a_vals: [3, 1, 0.5] },
+            procedures: { question: "5. 절차서 (구비/품질)", options: ["절차 없음", "불완전함", "미흡함", "정상", "진단 최적화됨"], d_vals: [50, 20, 5, 1, 0.5], a_vals: [50, 20, 5, 1, 1] },
+            ergonomics: { question: "6. 인간공학 / HMI (작업 편의성)", options: ["정보 부재/오도", "불편함", "보통", "매우 좋음"], d_vals: [50, 10, 1, 0.5], a_vals: [50, 10, 1, 0.5] },
+            fitness: { question: "7. 직무 적합성 (피로/건강)", options: ["근무 불가능/부적격", "컨디션 저조", "정상"], d_vals: [0, 5, 1], a_vals: [0, 5, 1] },
+            work_processes: { question: "8. 작업 프로세스 (팀워크/관리)", options: ["나쁨", "보통", "좋음"], d_vals: [2, 1, 0.8], a_vals: [5, 1, 0.5] }
+        };
+        const psfNames = { available_time: "가용 시간", stress: "스트레스", complexity: "복잡성", experience: "경험/훈련", procedures: "절차서", ergonomics: "인간공학", fitness: "직무 적합성", work_processes: "작업 프로세스" };
+
+        function scaleEPC(key, index) {
+            const optionCount = surveyData[key]?.options.length ?? 3;
+            if (optionCount <= 1) return 0;
+            // index 0이 가장 나쁨(기여도 최대), index 마지막이 가장 좋음(기여도 최소)
+            // → 반전시켜야 함
+            return (optionCount - 1 - index) / (optionCount - 1);
+        }
+
+
+        // SPAR-H 승수 기반 HEP 계산 로직
+        function calculateHEP(scores) {
+            const NOMINAL_D = 0.01;
+            const NOMINAL_A = 0.001;
+            let prodD = 1;
+            let prodA = 1;
+
+            for (const key of Object.keys(surveyData)) {
+                const selectedIdx = parseInt(scores[key]);
+                if (isNaN(selectedIdx)) continue; // 안전 처리
+                prodD *= surveyData[key].d_vals[selectedIdx];
+                prodA *= surveyData[key].a_vals[selectedIdx];
+            }
+
+            // 0값이 있으면 무조건 실패(1.0) 처리
+            const isFailure = (prodD === 0 || prodA === 0);
+            const hepD = isFailure ? 1.0 : Math.min(NOMINAL_D * prodD, 1.0);
+            const hepA = isFailure ? 1.0 : Math.min(NOMINAL_A * prodA, 1.0);
+
+            // 진단(D)과 수행(A) 중 더 보수적인(큰) 확률을 최종 HEP로 반환
+            return Math.max(hepD, hepA);
+        }
+
+        function generateSurveyQuestions() {
+            const questionsContainer = document.getElementById('surveyQuestions'); let html = ''; const keys = Object.keys(surveyData);
+            html += `<div class="survey-modal-header"><p>해당 휴먼에러 요인들에 대한 실제 현장 상황에 대해 선택하세요.</p></div>`;
+            keys.forEach(key => {
+                const item = surveyData[key]; html += `<div class="survey-card"><div class="survey-card-question">${item.question}</div><div class="survey-options">`;
+                item.options.forEach((opt, index) => {
+                    html += `<input type="radio" id="${key}-${index}" name="${key}" value="${index}" class="survey-option-input" onchange="checkSurveyCompletion()"><label for="${key}-${index}" class="survey-option-label" style="width: auto; padding: 5px 15px; border-radius: 15px; font-weight: normal; font-size: 0.9em;">${opt}</label>`;
+                });
+                html += `</div></div>`;
+            });
+            questionsContainer.innerHTML = html;
+            document.querySelectorAll('.survey-option-input').forEach(radio => {
+                radio.addEventListener('change', (e) => {
+                    const name = e.target.name; document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.nextElementSibling.style.backgroundColor = ''; r.nextElementSibling.style.color = ''; r.nextElementSibling.style.borderColor = '#ccc'; });
+                    if (e.target.checked) { const label = e.target.nextElementSibling; label.style.backgroundColor = 'var(--primary-color)'; label.style.color = 'white'; label.style.borderColor = 'var(--primary-color)'; }
+                });
+            });
+        }
+        function checkSurveyCompletion() { const form = document.getElementById('hepSurveyForm'); const questions = Object.keys(surveyData); let allAnswered = true; questions.forEach(key => { if (!form.querySelector(`input[name="${key}"]:checked`)) { allAnswered = false; } }); document.getElementById('submitBtn').disabled = !allAnswered; }
+
+        // --- 여기부터 수정된 부분 ---
+        function submitSurvey(event) {
+            event.preventDefault();
+            const editingRowId = document.getElementById('editingRowId').value;
+
+            let taskName = document.getElementById('taskNameInput').value.trim();
+
+            // 공란이면 자동 작업명 부여
+            if (!taskName) {
+                const rows = document.querySelectorAll('#taskTable tbody tr');
+                const existingCount = rows.length === 1 && rows[0].id === 'no-task-message' ? 0 : rows.length;
+                // 수정 모드일 때는 현재 행 제외
+                const baseCount = editingRowId ? existingCount - 1 : existingCount;
+                let autoIndex = baseCount + 1;
+                // 중복 방지: 이미 "작업N" 이름이 있으면 번호 증가
+                const usedNames = new Set();
+                document.querySelectorAll('#taskTable tbody tr').forEach(r => {
+                    if (r.dataset.name) usedNames.add(r.dataset.name.trim());
+                });
+                while (usedNames.has(`작업${autoIndex}`)) {
+                    autoIndex++;
+                }
+                taskName = `작업${autoIndex}`;
+                document.getElementById('taskNameInput').value = taskName;
+            }
+
+            // --- 요청된 기능 추가: 작업명 중복 확인 ---
+            const rows = document.querySelectorAll('#taskTable tbody tr');
+            let isDuplicate = false;
+            // 테이블에 작업이 있을 경우에만 중복 검사 실행
+            if (rows.length > 0 && rows[0].id !== 'no-task-message') {
+                for (const row of rows) {
+                    // 수정 모드일 때는 현재 수정 중인 행을 비교에서 제외
+                    if (editingRowId && row.id === editingRowId) {
+                        continue;
+                    }
+                    // 기존 작업명과 새 작업명을 비교 (양쪽 공백 제거 후)
+                    if (row.dataset.name && row.dataset.name.trim() === taskName) {
+                        isDuplicate = true;
+                        break;
+                    }
+                }
+            }
+
+            if (isDuplicate) {
+                alert('이미 존재하는 작업명입니다. 다른 이름을 사용해 주세요.');
+                return; // 중복이므로 함수 실행 중단
+            }
+            // --- 기능 추가 끝 ---
+
+            const formData = new FormData(event.target);
+            const values = { name: taskName };
+            const keys = Object.keys(surveyData);
+            for (const key of keys) {
+                const value = formData.get(key);
+                if (value === null) { return; } // 인덱스가 0일 때(!value) 튕겨나가는 문제 방지
+                values[key] = parseInt(value);
+            }
+            const originalHEP = calculateHEP(values);
+            values.hep = originalHEP.toFixed(4);
+            values.successProbability = (1.0 - originalHEP).toFixed(4);
+            if (editingRowId) {
+                updateTaskInTable(document.getElementById(editingRowId), values);
+            } else {
+                addTaskToTable(values);
+            }
+            closeSurveyModal();
+        }
+        // --- 여기까지 수정된 부분 ---
+
+        function addTaskToTable(taskData) {
+            const tableBody = document.getElementById('taskTable').querySelector('tbody');
+            const noTaskMessage = document.getElementById('no-task-message');
+            if (noTaskMessage) noTaskMessage.remove();
+            const newRow = tableBody.insertRow();
+            // [수정된 부분] Date.now() 대신 crypto.randomUUID()를 사용하여 고유 ID를 생성합니다.
+            newRow.id = `task-${crypto.randomUUID()}`;
+            updateTaskInTable(newRow, taskData);
+        }
+        function updateTaskInTable(row, taskData) {
+            for (const key in taskData) { row.dataset[key] = taskData[key]; }
+            const getTextOption = (key, value) => {
+                if (!surveyData[key]) return value;
+                const idx = parseInt(value);
+                return (!isNaN(idx) && surveyData[key].options[idx] !== undefined)
+                    ? surveyData[key].options[idx]
+                    : value;
+            };
+            row.innerHTML = `<td><input type="checkbox" name="task_select" onchange="handleCheckboxChange()"></td>
+<td>${taskData.name}</td>
+<td>${getTextOption('available_time', taskData.available_time)}</td>
+<td>${getTextOption('stress', taskData.stress)}</td>
+<td>${getTextOption('complexity', taskData.complexity)}</td>
+<td>${getTextOption('experience', taskData.experience)}</td>
+<td>${getTextOption('procedures', taskData.procedures)}</td>
+<td>${getTextOption('ergonomics', taskData.ergonomics)}</td>
+<td>${getTextOption('fitness', taskData.fitness)}</td>
+<td>${getTextOption('work_processes', taskData.work_processes)}</td>
+<td><strong style="color: var(--danger-color);">${taskData.hep}</strong></td>
+<td><strong>${taskData.successProbability}</strong></td>
+<td class="actions"><button class="btn btn-small btn-edit" onclick="editTask(this)">수정</button><button class="btn btn-small btn-danger" onclick="deleteTask(this)">삭제</button></td>`;
+        }
+        function editTask(button) { openSurveyModal(button.closest('tr')); }
+        function deleteTask(button) { const row = button.closest('tr'); const tableBody = row.parentNode; row.remove(); if (tableBody.rows.length === 0) { tableBody.innerHTML = `<tr id="no-task-message"><td colspan="13">아직 평가된 작업이 없습니다.</td></tr>`; } updateMoveButtonsState(); }
+        function openSurveyModal(row = null) {
+            const form = document.getElementById('hepSurveyForm'); form.reset(); document.getElementById('editingRowId').value = ''; document.querySelectorAll('.survey-option-label').forEach(label => { label.style.backgroundColor = ''; label.style.color = ''; label.style.borderColor = '#ccc'; });
+            if (row) {
+                document.getElementById('modalTitle').textContent = '기 입력된 작업에 대한 평가 수정'; document.getElementById('submitBtn').textContent = '수정 완료'; document.getElementById('editingRowId').value = row.id; document.getElementById('taskNameInput').value = row.dataset.name;
+
+                for (const key in surveyData) {
+                    const value = row.dataset[key];
+                    if (value !== undefined && value !== '') {  // "0"도 정상 처리
+                        const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
+                        if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
+                    }
+                }
+            } else { document.getElementById('modalTitle').textContent = '휴먼에러 요인분석 설문지'; document.getElementById('submitBtn').textContent = '추가하기'; }
+            document.getElementById('surveyModal').style.display = 'flex';
+            document.querySelector('#surveyModal .modal-content').scrollTop = 0;
+            checkSurveyCompletion();
+        }
+        function closeSurveyModal() { document.getElementById('surveyModal').style.display = 'none'; }
+
+        // 여러 항목 선택을 허용하고, 선택된 항목 수에 따라 버튼 상태를 업데이트하는 로직 (변경 없음)
+        function handleCheckboxChange() {
+            updateMoveButtonsState();
+        }
+        // 수정 후
+        function updateMoveButtonsState() {
+            const checkedBoxes = document.querySelectorAll('input[name="task_select"]:checked');
+            const moveUpBtn = document.getElementById('moveUpBtn');
+            const moveDownBtn = document.getElementById('moveDownBtn');
+            const managePsfBtn = document.getElementById('managePsfBtn');
+            const manageSelectedTasksBtn = document.getElementById('manageSelectedTasksBtn');
+
+            document.querySelectorAll('tbody tr').forEach(row => row.classList.remove('selected'));
+            checkedBoxes.forEach(box => box.closest('tr').classList.add('selected'));
+
+            const isSingleSelection = checkedBoxes.length === 1;
+            const isAnySelection = checkedBoxes.length > 0;
+
+            moveUpBtn.disabled = !isSingleSelection || !checkedBoxes[0].closest('tr').previousElementSibling;
+            moveDownBtn.disabled = !isSingleSelection || !checkedBoxes[0].closest('tr').nextElementSibling;
+
+            managePsfBtn.disabled = !isAnySelection;
+            manageSelectedTasksBtn.disabled = !isAnySelection;
+        }
+
+        function selectAllTasks() {
+            const checkboxes = document.querySelectorAll('#taskTable tbody input[name="task_select"]');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateMoveButtonsState();
+        }
+
+        function deselectAllTasks() {
+            const checkboxes = document.querySelectorAll('#taskTable tbody input[name="task_select"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateMoveButtonsState();
+        }
+
+        function moveRow(direction) { const checkedBox = document.querySelector('input[name="task_select"]:checked'); if (!checkedBox) return; const row = checkedBox.closest('tr'); if (direction === 'up' && row.previousElementSibling) { row.parentNode.insertBefore(row, row.previousElementSibling); } else if (direction === 'down' && row.nextElementSibling) { row.parentNode.insertBefore(row.nextElementSibling, row); } updateMoveButtonsState(); }
+        function saveTableAsCsv() {
+            const table = document.getElementById('taskTable');
+            const rows = table.querySelectorAll('tbody tr');
+
+            // 데이터 없는 경우 체크
+            if (rows.length === 0 || (rows.length === 1 && rows[0].id === 'no-task-message')) {
+                alert("저장할 데이터가 없습니다.");
+                return;
+            }
+
+            let csv = "작업 단계,성공 확률\n";
+            let dataCount = 0;
+
+            rows.forEach(row => {
+                if (row.id === 'no-task-message') return;
+                if (!row.dataset.name || !row.dataset.successProbability) return;
+                const taskName = `"${row.dataset.name.replace(/"/g, '""')}"`;
+                const successProbability = row.dataset.successProbability;
+                csv += `${taskName},${successProbability}\n`;
+                dataCount++;
+            });
+
+            if (dataCount === 0) {
+                alert("저장할 데이터가 없습니다.");
+                return;
+            }
+
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'hep_results.csv';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert(`저장이 완료되었습니다.\n파일명: hep_results.csv\n저장된 작업 수: ${dataCount}개`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSurveyQuestions();
+            // preventionData 관련 코드 전체 삭제 (예방효과 기능 제거됨)
+            document.getElementById('csvFileInput').addEventListener('change', loadDataFromCsv);
+        });
+
+        // --- [요청사항 수정 2] 관리 차트의 관리선 및 라벨 색상 변경 ---
+        function openHepManagementModal() {
+            const checkedBoxes = document.querySelectorAll('input[name="task_select"]:checked');
+            const tasks = [];
+            checkedBoxes.forEach(box => {
+                const row = box.closest('tr');
+                if (row.dataset.hep) {
+                    tasks.push({ name: row.dataset.name, hep: parseFloat(row.dataset.hep) });
+                }
+            });
+
+            const managementModal = document.getElementById('hepManagementModal');
+            const canvasContainer = document.getElementById('hepChartCanvas').parentNode;
+            const noChartMessage = document.getElementById('no-chart-message');
+            const statsContainer = document.getElementById('managementStats');
+
+            if (tasks.length === 0) {
+                canvasContainer.style.display = 'none';
+                statsContainer.style.display = 'none';
+                noChartMessage.style.display = 'block';
+                managementModal.style.display = 'flex';
+                return;
+            }
+
+            canvasContainer.style.display = 'block';
+            statsContainer.style.display = 'flex';
+            noChartMessage.style.display = 'none';
+
+            const labels = tasks.map(t => t.name);
+            const hepValues = tasks.map(t => t.hep);
+
+            const sum = hepValues.reduce((a, b) => a + b, 0);
+            const avg = sum / tasks.length;
+            const stdDev = tasks.length > 1 ? Math.sqrt(hepValues.map(x => Math.pow(x - avg, 2)).reduce((a, b) => a + b, 0) / (tasks.length - 1)) : 0;
+            const ucl = avg + 2 * stdDev;
+            const lcl = Math.max(0, avg - 2 * stdDev);
+
+            statsContainer.innerHTML = `
+            <div class="stat-avg"><span>평균 (AVG)</span><br><span>${avg.toFixed(4)}</span></div>
+            <div class="stat-stddev"><span>표준편차 (σ)</span><br><span>${stdDev.toFixed(4)}</span></div>
+            <div class="stat-ucl"><span>상한관리선 (UCL, +2σ)</span><br><span>${ucl.toFixed(4)}</span></div>
+            <div class="stat-lcl"><span>하한관리선 (LCL, -2σ)</span><br><span>${lcl.toFixed(4)}</span></div>`;
+
+            const barColors = hepValues.map(hep => {
+                if (hep > ucl) return 'rgba(217, 48, 37, 0.7)';
+                if (hep > avg) return 'rgba(255, 193, 7, 0.7)';
+                return 'rgba(40, 167, 69, 0.7)';
+            });
+
+            const suggestedMax = Math.max(...hepValues, ucl) * 1.1;
+            const ctx = document.getElementById('hepChartCanvas').getContext('2d');
+            if (hepChartInstance) {
+                hepChartInstance.destroy();
+            }
+
+            hepChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'HEP',
+                            data: hepValues,
+                            backgroundColor: barColors,
+                            borderColor: barColors.map(color => color.replace('0.7', '1')),
+                            borderWidth: 1,
+                            order: 1
+                        },
+                        {
+                            type: 'line',
+                            label: '평균',
+                            data: Array(labels.length).fill(avg),
+                            borderColor: 'var(--primary-color)',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false,
+                            borderDash: [5, 5],
+                            order: 0
+                        },
+                        {
+                            type: 'line',
+                            label: 'UCL (+2σ)',
+                            data: Array(labels.length).fill(ucl),
+                            // 요청사항: 상한선 붉은색
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false,
+                            order: 0
+                        },
+                        {
+                            type: 'line',
+                            label: 'LCL (-2σ)',
+                            data: Array(labels.length).fill(lcl),
+                            // 요청사항: 하한선 녹색
+                            borderColor: 'green',
+                            borderWidth: 2,
+                            pointRadius: 0,
+                            fill: false,
+                            order: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: suggestedMax
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            labels: {
+                                filter: item => item.datasetIndex !== 0
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y.toFixed(4); }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                },
+                // 관리선 위에 값을 표시하는 커스텀 플러그인
+                plugins: [{
+                    id: 'lineValueLabels',
+                    afterDatasetsDraw: (chart) => {
+                        const { ctx, chartArea: { top, right, bottom, left, width }, scales: { y } } = chart;
+
+                        chart.data.datasets.forEach((dataset, index) => {
+                            if (dataset.type === 'line') {
+                                const meta = chart.getDatasetMeta(index);
+                                const yPos = meta.data[0].y;
+
+                                if (yPos < top || yPos > bottom) return;
+
+                                const value = dataset.data[0];
+                                const labelText = `${dataset.label}: ${value.toFixed(4)}`;
+
+                                ctx.save();
+                                ctx.font = '600 12px sans-serif';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'bottom';
+                                const xPos = left + (width / 2);
+
+                                // 요청사항: UCL은 붉은 글씨, LCL은 녹색 글씨로 설정
+                                if (dataset.label.includes('UCL')) {
+                                    ctx.fillStyle = 'red';
+                                } else if (dataset.label.includes('LCL')) {
+                                    ctx.fillStyle = 'green';
+                                } else {
+                                    ctx.fillStyle = '#333333'; // 평균선은 검은색 계열
+                                }
+
+                                ctx.fillText(labelText, xPos, yPos - 2);
+                                ctx.restore();
+                            }
+                        });
+                    }
+                }]
+            });
+
+            managementModal.style.display = 'flex';
+        }
+        function closeHepManagementModal() { document.getElementById('hepManagementModal').style.display = 'none'; }
+
+        // PSF 관리 모달 (변경 없음)
+        function openPsfManagementModal() {
+            const checkedBoxes = document.querySelectorAll('input[name="task_select"]:checked');
+            const psfKeys = Object.keys(hepWeights);
+            const psfContributions = {};
+            psfKeys.forEach(key => psfContributions[key] = 0);
+
+            let selectionCount = 0;
+            checkedBoxes.forEach(box => {
+                const row = box.closest('tr');
+                if (row.dataset.hep) {
+                    selectionCount++;
+                    psfKeys.forEach(key => {
+                        const score = parseInt(row.dataset[key]);
+                        if (isNaN(score)) return;
+                        const influenceWeight = psfInfluenceWeights[key];
+                        const scaledValue = scaleEPC(key, score);
+                        const contribution = scaledValue * influenceWeight;
+                        psfContributions[key] += contribution;
+                    });
+                }
+            });
+
+            const modal = document.getElementById('psfManagementModal');
+            const canvasContainer = document.getElementById('psfChartCanvas').parentNode;
+            const noChartMessage = document.getElementById('no-psf-chart-message');
+
+            if (selectionCount === 0) {
+                canvasContainer.style.display = 'none';
+                noChartMessage.style.display = 'block';
+                modal.style.display = 'flex';
+                return;
+            }
+
+            canvasContainer.style.display = 'block';
+            noChartMessage.style.display = 'none';
+
+            psfKeys.forEach(key => {
+                psfContributions[key] /= selectionCount;
+            });
+
+            const psfData = psfKeys.map(key => ({
+                name: psfNames[key],
+                score: psfContributions[key]
+            })).sort((a, b) => b.score - a.score);
+
+            const labels = psfData.map(d => d.name);
+            const scores = psfData.map(d => d.score);
+
+            const backgroundColors = [
+                'rgba(217, 48, 37, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(40, 167, 69, 0.7)', 'rgba(40, 167, 69, 0.7)', 'rgba(40, 167, 69, 0.7)'
+            ];
+            const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
+            const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+
+            const ctx = document.getElementById('psfChartCanvas').getContext('2d');
+            if (psfChartInstance) {
+                psfChartInstance.destroy();
+            }
+            psfChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '평균 PSF 기여도',
+                        data: scores,
+                        backgroundColor: backgroundColors,
+                        borderColor: borderColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) { return `기여도: ${(context.parsed.y * 100).toFixed(2)}%`; }
+                            }
+                        },
+                        customPsfDatalabels: {
+                            formatter: (value) => (value * 100).toFixed(2) + '%',
+                            color: '#333',
+                            font: { weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: maxScore * 1.2
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'customPsfDatalabels',
+                    afterDatasetsDraw(chart, args, pluginOptions) {
+                        const { ctx } = chart;
+
+                        const font = pluginOptions.font || {};
+                        const weight = font.weight || 'normal';
+                        const size = font.size || 12;
+                        const family = font.family || 'sans-serif';
+
+                        ctx.save();
+                        ctx.font = `${weight} ${size}px ${family}`;
+                        ctx.fillStyle = pluginOptions.color || '#000';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+
+                        chart.data.datasets.forEach((dataset, i) => {
+                            const meta = chart.getDatasetMeta(i);
+                            meta.data.forEach((bar, index) => {
+                                const data = dataset.data[index];
+                                const label = pluginOptions.formatter ? pluginOptions.formatter(data) : data;
+                                ctx.fillText(label, bar.x, bar.y - 5);
+                            });
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+
+            modal.style.display = 'flex';
+        }
+        function closePsfManagementModal() { document.getElementById('psfManagementModal').style.display = 'none'; }
+
+
+        // --- [사용자 요청] 전체 데이터 저장 및 불러오기 기능 ---
+
+        /**
+         * 테이블의 모든 데이터를 CSV 파일로 저장합니다.
+         * 파일명은 '전체 자료입력_YYYYMMDD_HHMMSS.csv' 형식입니다.
+         */
+        function saveAllDataAsCsv() {
+            const table = document.getElementById('taskTable');
+            const rows = table.querySelectorAll('tbody tr');
+
+            if (rows.length === 1 && rows[0].id === 'no-task-message') {
+                alert("저장할 데이터가 없습니다.");
+                return;
+            }
+
+            const headers = ["연번", "작업명", "가용 시간", "스트레스", "복잡성", "경험/훈련", "절차서", "인간공학", "직무 적합성", "작업 프로세스", "HEP", "성공 확률"];
+            const keys = ["name", "available_time", "stress", "complexity", "experience", "procedures", "ergonomics", "fitness", "work_processes", "hep", "successProbability"];
+
+            let csvContent = "\ufeff"; // For Excel UTF-8 compatibility
+            csvContent += headers.join(',') + '\n';
+
+            rows.forEach((row, index) => {
+                if (row.id === 'no-task-message') return;
+
+                const rowData = [(index + 1).toString()]; // 연번 추가
+                keys.forEach(key => {
+                    let value = row.dataset[key] || '';
+                    // 쉼표가 포함된 작업명은 큰따옴표로 묶음
+                    if (key === 'name') {
+                        value = `"${value.replace(/"/g, '""')}"`;
+                    }
+                    rowData.push(value);
+                });
+                csvContent += rowData.join(',') + '\n';
+            });
+
+            const now = new Date();
+            const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+            const filename = `전체 자료입력_${timestamp}.csv`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            alert(`저장이 완료되었습니다.\n파일명: ${filename}`);
+        }
+
+        // CSV 한 줄을 빈 값 포함하여 정확히 파싱하는 함수
+        function parseCsvLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (inQuotes) {
+                    if (ch === '"') {
+                        // 연속된 "" → 이스케이프된 큰따옴표
+                        if (line[i + 1] === '"') { current += '"'; i++; }
+                        else { inQuotes = false; }
+                    } else {
+                        current += ch;
+                    }
+                } else {
+                    if (ch === '"') {
+                        inQuotes = true;
+                    } else if (ch === ',') {
+                        result.push(current);
+                        current = '';
+                    } else {
+                        current += ch;
+                    }
+                }
+            }
+            result.push(current); // 마지막 값 추가
+            return result;
+        }
+
+        function loadDataFromCsv(event) {
+            const file = event.target.files[0];
+            if (!file) { return; }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const text = e.target.result;
+                const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+
+                if (lines.length <= 1) {
+                    alert("파일에 불러올 데이터가 없습니다.");
+                    return;
+                }
+
+                const headerLine = lines[0].trim().replace(/^\uFEFF/, ''); // BOM 제거
+                if (!headerLine.startsWith("연번,작업명")) {
+                    alert("올바른 형식의 저장 파일이 아닙니다.\n'저장하기'로 저장한 파일을 선택해 주세요.");
+                    return;
+                }
+
+                const tableBody = document.getElementById('taskTable').querySelector('tbody');
+                tableBody.innerHTML = '';
+
+                let loadedCount = 0;
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+
+                    const values = parseCsvLine(line);
+
+                    const taskData = {
+                        name: values[1] ? values[1].trim() : '',
+                        available_time: values[2] !== undefined ? values[2].trim() : '0',
+                        stress: values[3] !== undefined ? values[3].trim() : '0',
+                        complexity: values[4] !== undefined ? values[4].trim() : '0',
+                        experience: values[5] !== undefined ? values[5].trim() : '0',
+                        procedures: values[6] !== undefined ? values[6].trim() : '0',
+                        ergonomics: values[7] !== undefined ? values[7].trim() : '0',
+                        fitness: values[8] !== undefined ? values[8].trim() : '0',
+                        work_processes: values[9] !== undefined ? values[9].trim() : '0',
+                        hep: values[10] !== undefined ? values[10].trim() : '0',
+                        successProbability: values[11] !== undefined ? values[11].trim() : '0'
+                    };
+
+                    if (taskData.name) {
+                        addTaskToTable(taskData);
+                        loadedCount++;
+                    }
+                }
+
+                if (loadedCount > 0) {
+                    alert(`${loadedCount}개의 작업을 불러왔습니다.`);
+                } else {
+                    alert("불러올 수 있는 작업 데이터가 없습니다.");
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+            event.target.value = '';
+        }
+
+        // --- [사용자 요청] 파일 메뉴 드롭다운 기능 ---
+        /**
+         * 모든 드롭다운 메뉴를 닫습니다.
+         */
+        function closeAllDropdowns() {
+            const dropdowns = document.getElementsByClassName("dropdown-content");
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+
+        // 파일 메뉴 버튼 클릭 시 드롭다운 토글
+        document.getElementById('fileMenuBtn').addEventListener('click', function (event) {
+            event.stopPropagation(); // 이벤트 전파 중단
+            const dropdown = document.getElementById("fileMenuDropdown");
+            // 다른 드롭다운이 열려있으면 닫고, 현재 드롭다운을 토글
+            const isCurrentlyShown = dropdown.classList.contains('show');
+            closeAllDropdowns();
+            if (!isCurrentlyShown) {
+                dropdown.classList.add('show');
+            }
+        });
+
+        // 화면의 다른 곳을 클릭하면 드롭다운 메뉴 닫기
+        window.onclick = function (event) {
+            if (!event.target.matches('#fileMenuBtn')) {
+                closeAllDropdowns();
+            }
+        }
+    </script>
+</body>
+
+</html>
