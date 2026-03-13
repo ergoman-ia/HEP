@@ -473,8 +473,13 @@
                 font-size: 0.8em;
                 padding: 4px 10px;
             }
-            #surveyModal .form-group {
+            #surveyModal .form-group #taskNameInput {
         display: none;
+    }
+    #surveyModal .form-group label::after {
+        content: " 임의로 부여";
+        color: red;
+        font-weight: bold;
     }
         }
     </style>
@@ -807,6 +812,9 @@
         function editTask(button) { openSurveyModal(button.closest('tr')); }
         function deleteTask(button) { const row = button.closest('tr'); const tableBody = row.parentNode; row.remove(); if (tableBody.rows.length === 0) { tableBody.innerHTML = `<tr id="no-task-message"><td colspan="13">아직 평가된 작업이 없습니다.</td></tr>`; } updateMoveButtonsState(); }
         function openSurveyModal(row = null) {
+            const isMobile = window.innerWidth <= 768;
+            document.getElementById('taskNameInput').disabled = isMobile;
+            
             const form = document.getElementById('hepSurveyForm'); form.reset(); document.getElementById('editingRowId').value = ''; document.querySelectorAll('.survey-option-label').forEach(label => { label.style.backgroundColor = ''; label.style.color = ''; label.style.borderColor = '#ccc'; });
             if (row) {
                 document.getElementById('modalTitle').textContent = '기 입력된 작업 수정'; document.getElementById('submitBtn').textContent = '수정 완료'; document.getElementById('editingRowId').value = row.id; document.getElementById('taskNameInput').value = row.dataset.name;
