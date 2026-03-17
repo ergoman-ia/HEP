@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,561 +20,924 @@
             --purple-color: #8A2BE2;
             --orange-color: #fd7e14;
         }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--background-color);
-            margin: 0; padding: 20px;
-            display: flex; justify-content: center; align-items: flex-start;
-            color: var(--text-color); line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-color);
+            line-height: 1.6;
         }
+
         .container {
-            width: 100%; max-width: 1400px;
-            background-color: #fff; border-radius: 12px;
-            box-shadow: 0 4px 12px var(--shadow-color); overflow: hidden;
+            width: 100%;
+            max-width: 1400px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
         }
+
         header {
-            padding: 20px 30px; background-color: var(--primary-color);
-            color: #fff; display: flex; justify-content: center; align-items: center;
+            padding: 20px 30px;
+            background-color: var(--primary-color);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        header h1 { margin: 0; font-size: 1.5em; }
-        main { padding: 30px; }
-        .form-group { margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
-        .form-group label { font-size: 18px; font-weight: bold; color: #005A9C; white-space: nowrap; }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group label {
+            font-size: 18px;
+            font-weight: bold;
+            color: #005A9C;
+            white-space: nowrap;
+        }
+
         .btn {
-            padding: 10px 20px; border: none; border-radius: 8px;
-            font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .btn-small { padding: 6px 12px; font-size: 0.85em; }
-        .btn-primary { background-color: #fff; color: var(--primary-color); }
-        .btn-primary:hover { background-color: var(--secondary-color); }
-        .btn-danger { background-color: var(--danger-color); color: #fff; }
-        .btn-danger:hover { opacity: 0.85; }
-        .btn-edit { background-color: var(--edit-color); color: #fff; }
-        .btn-edit:hover { opacity: 0.85; }
-        .btn-success { background-color: var(--success-color); color: #fff; }
-        .btn-success:hover { opacity: 0.85; }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-primary {
+            background-color: #fff;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            opacity: 0.85;
+        }
+
+        .btn-edit {
+            background-color: var(--edit-color);
+            color: #fff;
+        }
+
+        .btn-edit:hover {
+            opacity: 0.85;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            opacity: 0.85;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .table-controls {
-            display: flex; gap: 10px; margin-bottom: 15px;
-            align-items: center; flex-wrap: wrap;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+            flex-wrap: wrap;
         }
+
         .table-controls button {
-            background-color: #fff; border: 1px solid var(--border-color); color: var(--text-color);
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
         }
-        .table-controls button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td {
-            padding: 10px 12px; text-align: center;
+
+        .table-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px 12px;
+            text-align: center;
             border-bottom: 1px solid var(--border-color);
-            word-break: keep-all; white-space: nowrap;
+            word-break: keep-all;
+            white-space: nowrap;
         }
-        th { background-color: var(--secondary-color); font-weight: 600; color: var(--primary-color); }
-        tbody tr:nth-child(even) { background-color: #FDFDFD; }
-        tbody tr.selected { background-color: var(--secondary-color); }
-        td.actions { display: flex; gap: 8px; justify-content: center; }
-        .table-container td { font-size: 80%; }
+
+        th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #FDFDFD;
+        }
+
+        tbody tr.selected {
+            background-color: var(--secondary-color);
+        }
+
+        td.actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .table-container td {
+            font-size: 80%;
+        }
+
         .table-container td:nth-child(2),
         .table-container td:nth-child(11),
         .table-container td:nth-child(12),
-        .table-container td:nth-child(13) { font-size: 100%; font-weight: bold; }
+        .table-container td:nth-child(13) {
+            font-size: 100%;
+            font-weight: bold;
+        }
+
         .type-badge {
-            display: inline-block; padding: 2px 8px; border-radius: 10px;
-            font-size: 0.85em; font-weight: 600;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.85em;
+            font-weight: 600;
         }
-        .type-diagnosis { background-color: #fff3cd; color: #856404; }
-        .type-action    { background-color: #d1ecf1; color: #0c5460; }
-        .type-mixed     { background-color: #f8d7da; color: #721c24; }
+
+        .type-diagnosis {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .type-action {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .type-mixed {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
         .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.5); display: none;
-            justify-content: center; align-items: center; z-index: 1000;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
+
         .modal-content {
-            background-color: #fff; padding: 30px; border-radius: 12px;
-            width: 90%; max-width: 960px; max-height: 90vh; overflow-y: auto; font-size: 1rem;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 960px;
+            max-height: 90vh;
+            overflow-y: auto;
+            font-size: 1rem;
         }
-        #no-task-message { text-align: center; padding: 40px; color: #777; }
+
+        #no-task-message {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+
         #taskNameInput {
-            font-size: 1em; padding: 8px; width: 100%;
-            box-sizing: border-box; flex: 1; min-width: 0;
+            font-size: 1em;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            flex: 1;
+            min-width: 0;
         }
+
         .modal-content table th,
-        .modal-content table td { font-size: 1rem; }
+        .modal-content table td {
+            font-size: 1rem;
+        }
+
         .survey-modal-header {
-            font-size: 1rem; color: #555; text-align: center; margin-bottom: 20px;
+            font-size: 1rem;
+            color: #555;
+            text-align: center;
+            margin-bottom: 20px;
         }
+
         .survey-card {
-            background-color: #F8F9FA; border: 1px solid #E0E0E0;
-            border-radius: 8px; padding: 15px 20px; margin-bottom: 10px;
+            background-color: #F8F9FA;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
         }
+
         .survey-card-top {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .survey-card-question { font-weight: 500; color: #333; flex: 1; margin-right: 15px; }
-        .survey-card-hint { font-size: 0.8em; color: #888; margin-top: 4px; padding-left: 2px; }
-        .survey-options { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-        .survey-option-input { display: none; }
+
+        .survey-card-question {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .survey-card-hint {
+            font-size: 0.8em;
+            color: #888;
+            margin-top: 4px;
+            padding-left: 2px;
+        }
+
+        .survey-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .survey-option-input {
+            display: none;
+        }
+
         .survey-option-label {
-            display: flex; justify-content: center; align-items: center;
-            padding: 5px 15px; border-radius: 15px; font-weight: normal;
-            font-size: 0.9em; cursor: pointer; transition: all 0.2s;
-            border: 1px solid #ccc; white-space: nowrap;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: normal;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #ccc;
+            white-space: nowrap;
         }
-        .survey-option-input:checked + .survey-option-label {
-            background-color: var(--primary-color); color: #fff; border-color: var(--primary-color);
+
+        .survey-option-input:checked+.survey-option-label {
+            background-color: var(--primary-color);
+            color: #fff;
+            border-color: var(--primary-color);
         }
+
         .unknown-label {
-            border: 1px dashed #aaa !important; color: #888 !important;
+            border: 1px dashed #aaa !important;
+            color: #888 !important;
             background-color: #f5f5f5 !important;
         }
-        .survey-option-input:checked + .unknown-label {
-            background-color: #6c757d !important; color: #fff !important; border-color: #6c757d !important;
+
+        .survey-option-input:checked+.unknown-label {
+            background-color: #6c757d !important;
+            color: #fff !important;
+            border-color: #6c757d !important;
         }
+
         .result-box {
-            margin-top: 15px; padding: 14px 18px;
-            border-radius: 8px; font-size: 0.95em; line-height: 1.8;
+            margin-top: 15px;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            line-height: 1.8;
         }
-        .result-diagnosis { background-color: #fff8e1; border-left: 4px solid #f9a825; }
-        .result-action    { background-color: #e3f2fd; border-left: 4px solid #1976d2; }
-        .result-mixed     { background-color: #fce4ec; border-left: 4px solid #c62828; }
+
+        .result-diagnosis {
+            background-color: #fff8e1;
+            border-left: 4px solid #f9a825;
+        }
+
+        .result-action {
+            background-color: #e3f2fd;
+            border-left: 4px solid #1976d2;
+        }
+
+        .result-mixed {
+            background-color: #fce4ec;
+            border-left: 4px solid #c62828;
+        }
+
         #managementStats div {
-            padding: 10px; border-radius: 8px;
-            background-color: var(--secondary-color); flex-basis: 23%;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            flex-basis: 23%;
         }
-        #managementStats .stat-avg { color: var(--primary-color); }
-        #managementStats .stat-ucl { color: var(--danger-color); }
-        #managementStats .stat-lcl { color: var(--success-color); }
-        .dropdown { position: relative; display: inline-block; }
+
+        #managementStats .stat-avg {
+            color: var(--primary-color);
+        }
+
+        #managementStats .stat-ucl {
+            color: var(--danger-color);
+        }
+
+        #managementStats .stat-lcl {
+            color: var(--success-color);
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
         .dropdown-content {
-            display: none; position: absolute; right: 0;
-            background-color: #f9f9f9; min-width: 180px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2); z-index: 1001;
-            border-radius: 8px; overflow: hidden; border: 1px solid var(--border-color);
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 180px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
+
         .dropdown-content a {
-            color: var(--text-color); padding: 8px 16px; text-decoration: none;
-            display: block; font-size: 0.9em; text-align: left;
+            color: var(--text-color);
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+            text-align: left;
         }
-        .dropdown-content a:hover { background-color: var(--secondary-color); }
-        .show { display: block; }
+
+        .dropdown-content a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .show {
+            display: block;
+        }
+
         #fileMenuBtn {
-            background-color: transparent; border: 1px solid var(--border-color);
-            font-size: 1.2em; font-weight: bold; line-height: 1; padding: 6px 10px;
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            font-size: 1.2em;
+            font-weight: bold;
+            line-height: 1;
+            padding: 6px 10px;
         }
-        #fileMenuBtn:hover { background-color: var(--secondary-color); }
+
+        #fileMenuBtn:hover {
+            background-color: var(--secondary-color);
+        }
+
         @media (max-width: 768px) {
-            #taskTable th:nth-child(1), #taskTable td:nth-child(1),
-            #taskTable th:nth-child(3), #taskTable td:nth-child(3),
-            #taskTable th:nth-child(4), #taskTable td:nth-child(4),
-            #taskTable th:nth-child(5), #taskTable td:nth-child(5),
-            #taskTable th:nth-child(6), #taskTable td:nth-child(6),
-            #taskTable th:nth-child(7), #taskTable td:nth-child(7),
-            #taskTable th:nth-child(8), #taskTable td:nth-child(8),
-            #taskTable th:nth-child(9), #taskTable td:nth-child(9),
-            #taskTable th:nth-child(10), #taskTable td:nth-child(10),
-            #taskTable th:nth-child(13), #taskTable td:nth-child(13) { display: none; }
-            #managePsfBtn, #manageSelectedTasksBtn,
-            #selectAllBtn, #deselectAllBtn, .dropdown { display: none; }
-            #moveUpBtn, #moveDownBtn { display: none; }
-            .modal-content { width: 98%; padding: 15px; font-size: 0.9rem; }
-            .survey-card-top { flex-direction: column; align-items: flex-start; }
-            .survey-options { margin-top: 8px; }
-            #surveyModal .form-group #taskNameInput { display: none; }
-            #surveyModal .form-group label::after { content: " 임의로 부여"; color: red; font-weight: bold; }
+
+            #taskTable th:nth-child(1),
+            #taskTable td:nth-child(1),
+            #taskTable th:nth-child(3),
+            #taskTable td:nth-child(3),
+            #taskTable th:nth-child(4),
+            #taskTable td:nth-child(4),
+            #taskTable th:nth-child(5),
+            #taskTable td:nth-child(5),
+            #taskTable th:nth-child(6),
+            #taskTable td:nth-child(6),
+            #taskTable th:nth-child(7),
+            #taskTable td:nth-child(7),
+            #taskTable th:nth-child(8),
+            #taskTable td:nth-child(8),
+            #taskTable th:nth-child(9),
+            #taskTable td:nth-child(9),
+            #taskTable th:nth-child(10),
+            #taskTable td:nth-child(10),
+            #taskTable th:nth-child(13),
+            #taskTable td:nth-child(13) {
+                display: none;
+            }
+
+            #managePsfBtn,
+            #manageSelectedTasksBtn,
+            #selectAllBtn,
+            #deselectAllBtn,
+            .dropdown {
+                display: none;
+            }
+
+            #moveUpBtn,
+            #moveDownBtn {
+                display: none;
+            }
+
+            .modal-content {
+                width: 98%;
+                padding: 15px;
+                font-size: 0.9rem;
+            }
+
+            .survey-card-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .survey-options {
+                margin-top: 8px;
+            }
+
+            #surveyModal .form-group #taskNameInput {
+                display: none;
+            }
+
+            #surveyModal .form-group label::after {
+                content: " 임의로 부여";
+                color: red;
+                font-weight: bold;
+            }
         }
     </style>
 </head>
+
 <body>
-<div class="container">
-    <header><h1>휴먼에러 확률(HEP) 평가</h1></header>
-    <main>
-        <div class="table-controls">
-            <button id="addTaskBtn" class="btn btn-primary" onclick="openSurveyModal()"
-                style="background:#0b3d91;color:#fff">작업 추가</button>
-            <button id="moveUpBtn" class="btn btn-small" onclick="moveRow('up')" disabled>위로 ▲</button>
-            <button id="moveDownBtn" class="btn btn-small" onclick="moveRow('down')" disabled>아래로 ▼</button>
-            <button id="selectAllBtn" class="btn btn-small" onclick="selectAllTasks()">전체 선택</button>
-            <button id="deselectAllBtn" class="btn btn-small" onclick="deselectAllTasks()">전체 선택 취소</button>
-            <button id="managePsfBtn" class="btn btn-primary" onclick="openPsfManagementModal()"
-                style="background-color:var(--orange-color);color:#fff;" disabled>선택작업 PSF 관리</button>
-            <button id="manageSelectedTasksBtn" class="btn btn-primary" onclick="openHepManagementModal()"
-                style="background-color:var(--purple-color);color:#fff;" disabled>선택 작업관리</button>
-            <div class="dropdown" style="margin-left:auto;">
-                <button id="fileMenuBtn" class="btn btn-small">&#8942;</button>
-                <div id="fileMenuDropdown" class="dropdown-content">
-                    <a href="#" onclick="document.getElementById('csvFileInput').click();closeAllDropdowns();return false;">▷ 불러오기</a>
-                    <a href="#" onclick="closeAllDropdowns();saveAllDataAsCsv();return false;">▷ 저장하기</a>
-                    <a href="#" onclick="closeAllDropdowns();saveTableAsCsv();return false;">▷ 저장하기(THERP용)</a>
+    <div class="container">
+        <header>
+            <h1>휴먼에러 확률(HEP) 평가</h1>
+        </header>
+        <main>
+            <div class="table-controls">
+                <button id="addTaskBtn" class="btn btn-primary" onclick="openSurveyModal()"
+                    style="background:#0b3d91;color:#fff">작업 추가</button>
+                <button id="moveUpBtn" class="btn btn-small" onclick="moveRow('up')" disabled>위로 ▲</button>
+                <button id="moveDownBtn" class="btn btn-small" onclick="moveRow('down')" disabled>아래로 ▼</button>
+                <button id="selectAllBtn" class="btn btn-small" onclick="selectAllTasks()">전체 선택</button>
+                <button id="deselectAllBtn" class="btn btn-small" onclick="deselectAllTasks()">전체 선택 취소</button>
+                <button id="managePsfBtn" class="btn btn-primary" onclick="openPsfManagementModal()"
+                    style="background-color:var(--orange-color);color:#fff;" disabled>선택작업 PSF 관리</button>
+                <button id="manageSelectedTasksBtn" class="btn btn-primary" onclick="openHepManagementModal()"
+                    style="background-color:var(--purple-color);color:#fff;" disabled>선택 작업관리</button>
+                <div class="dropdown" style="margin-left:auto;">
+                    <button id="fileMenuBtn" class="btn btn-small">&#8942;</button>
+                    <div id="fileMenuDropdown" class="dropdown-content">
+                        <a href="#"
+                            onclick="document.getElementById('csvFileInput').click();closeAllDropdowns();return false;">▷
+                            불러오기</a>
+                        <a href="#" onclick="closeAllDropdowns();saveAllDataAsCsv();return false;">▷ 저장하기</a>
+                        <a href="#" onclick="closeAllDropdowns();saveTableAsCsv();return false;">▷ 저장하기(THERP용)</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="table-container">
-            <table id="taskTable">
-                <thead>
-                    <tr>
-                        <th>선택</th>
-                        <th>작업명</th>
-                        <th>가용 시간</th>
-                        <th>스트레스</th>
-                        <th>복잡성</th>
-                        <th>경험/훈련</th>
-                        <th>절차서</th>
-                        <th>인간공학</th>
-                        <th>직무 적합성</th>
-                        <th>작업 프로세스</th>
-                        <th>작업유형</th>
-                        <th>HEP</th>
-                        <th>성공 확률</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr id="no-task-message"><td colspan="14">아직 평가된 작업이 없습니다.</td></tr>
-                </tbody>
-            </table>
-        </div>
-        <input type="file" id="csvFileInput" accept=".csv" style="display:none;" />
-    </main>
-</div>
+            <div class="table-container">
+                <table id="taskTable">
+                    <thead>
+                        <tr>
+                            <th>선택</th>
+                            <th>작업명</th>
+                            <th>허용 시간</th>
+                            <th>스트레스</th>
+                            <th>복잡성</th>
+                            <th>경험·교육훈련</th>
+                            <th>작업지시서·PTW</th>
+                            <th>작업환경·설비</th>
+                            <th>작업자 적합성</th>
+                            <th>작업관리 체계</th>
+                            <th>작업유형</th>
+                            <th>HEP</th>
+                            <th>성공 확률</th>
+                            <th>관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr id="no-task-message">
+                            <td colspan="14">아직 평가된 작업이 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <input type="file" id="csvFileInput" accept=".csv" style="display:none;" />
+        </main>
+    </div>
 
-<!-- 설문조사 모달 -->
-<div class="modal-overlay" id="surveyModal">
-    <div class="modal-content">
-        <h1 align="center" id="modalTitle">휴먼에러 요인분석 설문지</h1>
-        <form id="hepSurveyForm" onsubmit="submitSurvey(event)">
-            <input type="hidden" id="editingRowId">
-            <div class="form-group">
-                <label for="taskNameInput">▶ 평가할 대상 작업명 : </label>
-                <input type="text" id="taskNameInput" placeholder="예: 밸브 잠금 작업 (빈칸이면 자동 부여)">
+    <!-- 설문조사 모달 -->
+    <div class="modal-overlay" id="surveyModal">
+        <div class="modal-content">
+            <h1 align="center" id="modalTitle">휴먼에러 요인분석 설문지</h1>
+            <form id="hepSurveyForm" onsubmit="submitSurvey(event)">
+                <input type="hidden" id="editingRowId">
+                <div class="form-group">
+                    <label for="taskNameInput">▶ 평가할 대상 작업명 : </label>
+                    <input type="text" id="taskNameInput" placeholder="예: 밸브 잠금 작업 (빈칸이면 자동 부여)">
+                </div>
+                <div class="survey-modal-header">
+                    <p>각 항목에 대해 현장 상황을 선택하세요. 판단이 어려운 항목은 <b>"모름/판단불가"</b>를 선택하면 BN 사전확률이 자동 적용됩니다.</p>
+                </div>
+                <div id="surveyQuestions"></div>
+                <div id="previewResult" style="display:none;"></div>
+                <div class="modal-actions" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+                    <button type="button" class="btn" onclick="closeSurveyModal()">취소</button>
+                    <button type="submit" id="submitBtn" class="btn btn-primary"
+                        style="background-color:var(--primary-color);color:#fff;" disabled>추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 선택 작업관리 모달 -->
+    <div class="modal-overlay" id="hepManagementModal">
+        <div class="modal-content" style="max-width:1000px;">
+            <h2 style="text-align:center;color:var(--primary-color);margin-bottom:20px;">선택 작업 HEP 관리 차트</h2>
+            <div id="managementStats"
+                style="display:flex;justify-content:space-around;margin-bottom:20px;font-weight:bold;text-align:center;">
             </div>
-            <div class="survey-modal-header">
-                <p>각 항목에 대해 현장 상황을 선택하세요. 판단이 어려운 항목은 <b>"모름/판단불가"</b>를 선택하면 BN 사전확률이 자동 적용됩니다.</p>
+            <div style="position:relative;height:40vh;width:100%"><canvas id="hepChartCanvas"></canvas></div>
+            <div id="no-chart-message" style="display:none;text-align:center;padding:40px;color:#777;">분석할 작업을 선택해주세요.
             </div>
-            <div id="surveyQuestions"></div>
-            <div id="previewResult" style="display:none;"></div>
             <div class="modal-actions" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-                <button type="button" class="btn" onclick="closeSurveyModal()">취소</button>
-                <button type="submit" id="submitBtn" class="btn btn-primary"
-                    style="background-color:var(--primary-color);color:#fff;" disabled>추가하기</button>
+                <button type="button" class="btn" onclick="closeHepManagementModal()">닫기</button>
             </div>
-        </form>
-    </div>
-</div>
-
-<!-- 선택 작업관리 모달 -->
-<div class="modal-overlay" id="hepManagementModal">
-    <div class="modal-content" style="max-width:1000px;">
-        <h2 style="text-align:center;color:var(--primary-color);margin-bottom:20px;">선택 작업 HEP 관리 차트</h2>
-        <div id="managementStats" style="display:flex;justify-content:space-around;margin-bottom:20px;font-weight:bold;text-align:center;"></div>
-        <div style="position:relative;height:40vh;width:100%"><canvas id="hepChartCanvas"></canvas></div>
-        <div id="no-chart-message" style="display:none;text-align:center;padding:40px;color:#777;">분석할 작업을 선택해주세요.</div>
-        <div class="modal-actions" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-            <button type="button" class="btn" onclick="closeHepManagementModal()">닫기</button>
         </div>
     </div>
-</div>
 
-<!-- 선택작업 PSF 관리 모달 -->
-<div class="modal-overlay" id="psfManagementModal">
-    <div class="modal-content" style="max-width:1000px;">
-        <h2 style="text-align:center;color:var(--primary-color);margin-bottom:20px;">선택 작업 PSF 요인 분석</h2>
-        <div style="position:relative;height:40vh;width:100%"><canvas id="psfChartCanvas"></canvas></div>
-        <div id="no-psf-chart-message" style="display:none;text-align:center;padding:40px;color:#777;">분석할 작업을 선택해주세요.</div>
-        <div class="modal-actions" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
-            <button type="button" class="btn" onclick="closePsfManagementModal()">닫기</button>
+    <!-- 선택작업 PSF 관리 모달 -->
+    <div class="modal-overlay" id="psfManagementModal">
+        <div class="modal-content" style="max-width:1000px;">
+            <h2 style="text-align:center;color:var(--primary-color);margin-bottom:20px;">선택 작업 PSF 요인 분석</h2>
+            <div style="position:relative;height:40vh;width:100%"><canvas id="psfChartCanvas"></canvas></div>
+            <div id="no-psf-chart-message" style="display:none;text-align:center;padding:40px;color:#777;">분석할 작업을
+                선택해주세요.</div>
+            <div class="modal-actions" style="display:flex;justify-content:flex-end;gap:10px;margin-top:20px;">
+                <button type="button" class="btn" onclick="closePsfManagementModal()">닫기</button>
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    let hepChartInstance = null;
-    let psfChartInstance = null;
+    <script>
+        let hepChartInstance = null;
+        let psfChartInstance = null;
 
-    // =====================================================================
-    // surveyData: SPAR-H 8개 PSF 정의
-    //
-    // multipliers: SPAR-H NUREG/CR-6883 기준 — index 0 = 최악(설문 첫 선택지)
-    // priors: BN-SPAR-H NUREG/CR-6949 사전확률 — "모름" 선택 시 기대 multiplier 계산
-    // forceOne: 해당 index 선택 시 즉시 HEP = 1.0
-    // diagWeight: 진단(Diagnosis) 작업 유형 판별 가중치
-    // actionWeight: 수행(Action) 작업 유형 판별 가중치
-    // hint: 설문 항목 보조 설명
-    // =====================================================================
-    const surveyData = {
-        available_time: {
-            question: "1. 가용 시간 (시간압박 정도)",
-            hint: "진단 관련 — 상황 판단에 얼마나 시간적 여유가 있는지",
-            options: ["불충분한/턱없이 부족", "겨우 맞출 수 있음", "적당히 충분함", "여유 있음", "아주 넉넉함"],
-            multipliers: [null, 10, 1, 0.1, 0.01],
-            priors:      [1e-6, 0.159, 0.683, 0.136, 0.023],
-            forceOne:    [0],
-            diagWeight:  0.30,
-            actionWeight:0.10
-        },
-        stress: {
-            question: "2. 스트레스 (집중/긴장감)",
-            hint: "진단 관련 — 인지 판단에 영향을 미치는 심리적 압박",
-            options: ["극도의 압박", "높은 스트레스", "정상 수준"],
-            multipliers: [5, 2, 1],
-            priors:      [0.023, 0.136, 0.841],
-            forceOne:    [],
-            diagWeight:  0.25,
-            actionWeight:0.10
-        },
-        complexity: {
-            question: "3. 복잡성 (작업 난이도)",
-            hint: "진단 관련 — 상황 해석 및 판단의 복잡성 정도",
-            options: ["매우 복잡함", "다소 복잡함", "보통", "매우 단순/명백함"],
-            multipliers: [5, 2, 1, 0.1],
-            priors:      [0.159, 0.341, 0.500, 0.0],
-            forceOne:    [],
-            diagWeight:  0.25,
-            actionWeight:0.10
-        },
-        experience: {
-            question: "4. 경험 / 훈련 (숙련도)",
-            hint: "공통 — 진단과 수행 모두에 영향",
-            options: ["경험부족/초보", "보통", "숙련된 전문가"],
-            multipliers: [3, 1, 0.5],
-            priors:      [0.333, 0.333, 0.333],
-            forceOne:    [],
-            diagWeight:  0.10,
-            actionWeight:0.10
-        },
-        procedures: {
-            question: "5. 절차서 (구비/품질)",
-            hint: "수행 관련 — 작업 수행 절차의 존재 및 품질",
-            options: ["절차 없음", "불완전함", "미흡함", "정상", "진단 최적화됨"],
-            multipliers: [50, 20, 5, 1, 0.5],
-            priors:      [0.050, 0.200, 0.300, 0.450, 0.0],
-            forceOne:    [],
-            diagWeight:  0.05,
-            actionWeight:0.30
-        },
-        ergonomics: {
-            question: "6. 인간공학 / HMI (작업 편의성)",
-            hint: "진단 관련 — 정보 판독 및 인터페이스 품질",
-            options: ["정보 부재/오도", "불편함", "보통", "매우 좋음"],
-            multipliers: [50, 10, 1, 0.5],
-            priors:      [0.023, 0.136, 0.683, 0.159],
-            forceOne:    [],
-            diagWeight:  0.05,
-            actionWeight:0.10
-        },
-        fitness: {
-            question: "7. 직무 적합성 (피로/건강)",
-            hint: "수행 관련 — 신체적 수행 능력에 영향",
-            options: ["근무 불가능/부적격", "컨디션 저조", "정상"],
-            multipliers: [null, 5, 1],
-            priors:      [1e-6, 0.159, 0.841],
-            forceOne:    [0],
-            diagWeight:  0.00,
-            actionWeight:0.15
-        },
-        work_processes: {
-            question: "8. 작업 프로세스 (팀워크/관리)",
-            hint: "수행 관련 — 팀 협업 및 작업 관리 체계",
-            options: ["나쁨", "보통", "좋음"],
-            multipliers: [5, 1, 0.5],
-            priors:      [0.023, 0.819, 0.159],
-            forceOne:    [],
-            diagWeight:  0.00,
-            actionWeight:0.15
-        }
-    };
+        // =====================================================================
+        // surveyData: SPAR-H 8개 PSF 정의
+        //
+        // multipliers: SPAR-H NUREG/CR-6883 기준 — index 0 = 최악(설문 첫 선택지)
+        // priors: BN-SPAR-H NUREG/CR-6949 사전확률 — "모름" 선택 시 기대 multiplier 계산
+        // forceOne: 해당 index 선택 시 즉시 HEP = 1.0
+        // diagWeight: 진단(Diagnosis) 작업 유형 판별 가중치
+        // actionWeight: 수행(Action) 작업 유형 판별 가중치
+        // hint: 설문 항목 보조 설명
+        // =====================================================================
+        const surveyData = {
+            available_time: {
+                question: "1. 작업 허용 시간 (시간압박 정도)",
+                hint: "진단 관련 — 이상 상황 파악·판단에 실제로 허용된 시간적 여유 (공정 사이클, 감독자 대기, 작업지시 등 포함)",
+                options: [
+                    "턱없이 부족 — 판단·확인 불가 수준",
+                    "겨우 맞춤 — 확인 절차 생략 가능성 있음",
+                    "적당히 충분 — 기본 확인 가능",
+                    "여유 있음 — 충분한 검토 가능",
+                    "매우 넉넉 — 재확인까지 가능"
+                ],
+                multipliers: [null, 10, 1, 0.1, 0.01],
+                priors: [1e-6, 0.159, 0.683, 0.136, 0.023],
+                forceOne: [0],
+                diagWeight: 0.25,
+                actionWeight: 0.10
+            },
+            stress: {
+                question: "2. 작업 스트레스 (긴장·압박 정도)",
+                hint: "진단 관련 — 생산 목표, 납기 압박, 감독 강도, 위험 인식 등 현장에서 체감하는 심리적 부담",
+                options: [
+                    "극도 — 생산중단·납기·안전사고 압박이 동시에 있음",
+                    "높음 — 생산·납기 압박이 명확히 있음",
+                    "정상 — 일반적인 작업 긴장감 수준"
+                ],
+                multipliers: [5, 2, 1],
+                priors: [0.023, 0.136, 0.841],
+                forceOne: [],
+                diagWeight: 0.20,
+                actionWeight: 0.10
+            },
+            complexity: {
+                question: "3. 작업 복잡성 (난이도)",
+                hint: "진단 관련 — 작업 단계 수, 동시 처리 요소, 판단이 필요한 분기점, 여러 설비·공종 간 조율 여부",
+                options: [
+                    "매우 복잡 — 다수 공종·설비 동시 조율, 판단 분기 많음",
+                    "복잡 — 여러 단계·부서 협조 필요",
+                    "보통 — 표준 작업 수준",
+                    "단순 — 단일 반복 동작, 판단 불필요"
+                ],
+                multipliers: [5, 2, 1, 0.1],
+                priors: [0.140, 0.300, 0.430, 0.130],
+                forceOne: [],
+                diagWeight: 0.25,
+                actionWeight: 0.05
+            },
+            experience: {
+                question: "4. 경험 및 교육훈련 수준",
+                hint: "공통 — 해당 작업 종사 기간, OJT·정기교육 이수 여부, 유사 비정상 상황 처리 경험 포함",
+                options: [
+                    "경험 부족 — 6개월 미만 또는 해당 작업 첫 수행",
+                    "보통 — 기본 OJT 이수, 1~3년 경험",
+                    "숙련 — 3년 이상, 비정상 상황 처리 경험 있음"
+                ],
+                multipliers: [3, 1, 0.5],
+                priors: [0.333, 0.333, 0.333],
+                forceOne: [],
+                diagWeight: 0.10,
+                actionWeight: 0.10
+            },
+            procedures: {
+                question: "5. 작업지시서·안전작업허가서 (구비/품질)",
+                hint: "수행 관련 — 작업지시서(WO), 안전작업허가서(PTW), 위험성평가서, 작업표준서(SOP) 등의 존재·최신성·현장 접근성",
+                options: [
+                    "없음 — 관련 문서 전무, 구두 지시만 있음",
+                    "불완전 — 일부 단계 누락 또는 현행화 안 됨",
+                    "미흡 — 있으나 현장 조건과 불일치",
+                    "정상 — 최신화·현장 비치, 작업자 숙지",
+                    "최적화 — 체크리스트·사진 포함, 작업자 직접 참여 작성"
+                ],
+                multipliers: [50, 20, 5, 1, 0.5],
+                priors: [0.050, 0.190, 0.285, 0.425, 0.050],
+                forceOne: [],
+                diagWeight: 0.05,
+                actionWeight: 0.30
+            },
+            ergonomics: {
+                question: "6. 작업환경 및 설비·도구 설계 (인간공학)",
+                hint: "진단 관련 — 계기·표시장치 가독성, 공구·설비 접근성, 조명·소음·온도, 보호구 착용 시 작업 가능성",
+                options: [
+                    "매우 불량 — 계기 오독 유발, 설비 접근 불가, 극한 환경",
+                    "불량 — 조명 부족, 공구 부적합, 협소 공간",
+                    "보통 — 일반적인 현장 환경 수준",
+                    "양호 — 표시 명확, 공구 적합, 작업 동선 확보"
+                ],
+                multipliers: [50, 10, 1, 0.5],
+                priors: [0.023, 0.136, 0.683, 0.159],
+                forceOne: [],
+                diagWeight: 0.15,
+                actionWeight: 0.10
+            },
+            fitness: {
+                question: "7. 작업자 신체·정신 적합성",
+                hint: "수행 관련 — 교대근무 피로, 수면 부족, 음주·복약, 개인 건강 이상, 고소·밀폐 작업 적합 여부",
+                options: [
+                    "부적합 — 음주, 질병, 극심한 피로 등 작업 수행 불가",
+                    "저하 — 야간 연속 교대, 수면 부족, 경미한 건강 이상",
+                    "정상 — 건강 상태 양호, 충분한 휴식"
+                ],
+                multipliers: [null, 5, 1],
+                priors: [1e-6, 0.159, 0.841],
+                forceOne: [0],
+                diagWeight: 0.00,
+                actionWeight: 0.15
+            },
+            work_processes: {
+                question: "8. 작업 관리 체계 (안전관리·감독·소통)",
+                hint: "수행 관련 — TBM 실시 여부, 감독자 현장 확인, 작업 전 위험요인 공유, 다공종 간 작업 조율, 변경 사항 전달 체계",
+                options: [
+                    "불량 — TBM 미실시, 감독 부재, 변경 미공지",
+                    "보통 — 형식적 TBM, 간헐적 감독",
+                    "양호 — 충실한 TBM, 상시 감독, 변경사항 즉시 공유"
+                ],
+                multipliers: [5, 1, 0.5],
+                priors: [0.023, 0.819, 0.159],
+                forceOne: [],
+                diagWeight: 0.00,
+                actionWeight: 0.10
+            }
+        };
 
-    const psfNames = {
-        available_time: "가용 시간", stress: "스트레스", complexity: "복잡성",
-        experience: "경험/훈련",   procedures: "절차서",  ergonomics: "인간공학",
-        fitness: "직무 적합성",    work_processes: "작업 프로세스"
-    };
+        const psfNames = {
+            available_time: "작업 허용 시간",
+            stress: "작업 스트레스",
+            complexity: "작업 복잡성",
+            experience: "경험·교육훈련",
+            procedures: "작업지시서·PTW",
+            ergonomics: "작업환경·설비설계",
+            fitness: "작업자 적합성",
+            work_processes: "작업관리 체계"
+        };
 
-    const hepWeights = {
-        available_time: [0.01,10], stress:[1,5],      complexity:[0.1,5],
-        experience:[0.5,10],       procedures:[0.5,50], ergonomics:[0.5,50],
-        fitness:[0,5],             work_processes:[0.8,5]
-    };
+        const psfInfluenceWeights = {
+            available_time: 0.10, stress: 0.10, complexity: 0.15,
+            experience: 0.15, procedures: 0.20, ergonomics: 0.15,
+            fitness: 0.05, work_processes: 0.10
+        };
 
-    const psfInfluenceWeights = {
-        available_time:0.10, stress:0.10, complexity:0.15,
-        experience:0.15,     procedures:0.20, ergonomics:0.15,
-        fitness:0.05,        work_processes:0.10
-    };
-
-    // =====================================================================
-    // getEffectiveMultiplier(key, idx):
-    //   완전 정보: SPAR-H multiplier 직접 반환
-    //   부분 정보(idx=null/"unknown"): BN NUREG/CR-6949 사전확률 기반 기대값
-    //   forceOne: 'FORCE_ONE' 반환 → HEP=1.0
-    // =====================================================================
-    function getEffectiveMultiplier(key, idx) {
-        const psf = surveyData[key];
-        if (idx === null || idx === undefined || idx === 'unknown') {
-            let eSum = 0, pSum = 0;
-            psf.multipliers.forEach((m, i) => {
-                if (psf.forceOne.includes(i)) return;
-                const p = psf.priors[i];
-                eSum += p * m;
-                pSum += p;
-            });
-            return pSum > 0 ? eSum / pSum : 1.0;
-        }
-        const idxNum = parseInt(idx);
-        if (psf.forceOne.includes(idxNum)) return 'FORCE_ONE';
-        return psf.multipliers[idxNum];
-    }
-
-    // =====================================================================
-    // classifyTaskType(scores):
-    //   PSF 선택 패턴으로 진단(Diagnosis) / 수행(Action) 자동 판별
-    //
-    //   각 PSF의 위험도 = log(multiplier) / log(최대 multiplier) → 0~1
-    //   (multiplier ≤ 1 → 위험도 0, "모름" → BN 기대 multiplier 사용)
-    //
-    //   D_score = Σ (위험도_i × diagWeight_i)   / Σ diagWeight_i
-    //   A_score = Σ (위험도_i × actionWeight_i) / Σ actionWeight_i
-    //
-    //   판별:
-    //     D_score > A_score + 0.10 → 진단 (NHEP = 0.01)
-    //     A_score > D_score + 0.10 → 수행 (NHEP = 0.001)
-    //     차이 < 0.10              → 혼합 → 보수적으로 NHEP = 0.01
-    //
-    //   반환: { type, nhep, dScore, aScore, reason }
-    // =====================================================================
-    function classifyTaskType(scores) {
-        const keys = Object.keys(surveyData);
-        let dWeightedSum = 0, dWeightTotal = 0;
-        let aWeightedSum = 0, aWeightTotal = 0;
-        const details = [];
-
-        keys.forEach(key => {
+        // =====================================================================
+        // getEffectiveMultiplier(key, idx):
+        //   완전 정보: SPAR-H multiplier 직접 반환
+        //   부분 정보(idx=null/"unknown"): BN NUREG/CR-6949 사전확률 기반 기대값
+        //   forceOne: 'FORCE_ONE' 반환 → HEP=1.0
+        // =====================================================================
+        function getEffectiveMultiplier(key, idx) {
             const psf = surveyData[key];
-            const raw = scores[key];
-            const isUnknown = (raw === undefined || raw === null || raw === 'unknown'
-                               || String(raw) === '');
+            if (idx === null || idx === undefined || idx === 'unknown') {
+                let eSum = 0, pSum = 0;
+                psf.multipliers.forEach((m, i) => {
+                    if (psf.forceOne.includes(i)) return;
+                    const p = psf.priors[i];
+                    eSum += p * m;
+                    pSum += p;
+                });
+                return pSum > 0 ? eSum / pSum : 1.0;
+            }
+            const idxNum = parseInt(idx);
+            if (psf.forceOne.includes(idxNum)) return 'FORCE_ONE';
+            return psf.multipliers[idxNum];
+        }
 
-            // 유효 multiplier 산출
-            const m = isUnknown
-                ? getEffectiveMultiplier(key, null)
-                : getEffectiveMultiplier(key, parseInt(raw));
+        // =====================================================================
+        // classifyTaskType(scores):
+        //   PSF 선택 패턴으로 진단(Diagnosis) / 수행(Action) 자동 판별
+        //
+        //   각 PSF의 위험도 = log(multiplier) / log(최대 multiplier) → 0~1
+        //   (multiplier ≤ 1 → 위험도 0, "모름" → BN 기대 multiplier 사용)
+        //
+        //   D_score = Σ (위험도_i × diagWeight_i)   / Σ diagWeight_i
+        //   A_score = Σ (위험도_i × actionWeight_i) / Σ actionWeight_i
+        //
+        //   판별:
+        //     D_score > A_score + 0.10 → 진단 (NHEP = 0.01)
+        //     A_score > D_score + 0.10 → 수행 (NHEP = 0.001)
+        //     차이 < 0.10              → 혼합 → 보수적으로 NHEP = 0.01
+        //
+        //   반환: { type, nhep, dScore, aScore, reason }
+        // =====================================================================
+        function classifyTaskType(scores) {
+            const keys = Object.keys(surveyData);
+            let dWeightedSum = 0, dWeightTotal = 0;
+            let aWeightedSum = 0, aWeightTotal = 0;
+            const details = [];
 
-            if (m === 'FORCE_ONE') {
-                details.push({ key, risk: 1.0, isUnknown });
-                dWeightedSum  += 1.0 * psf.diagWeight;
-                aWeightedSum  += 1.0 * psf.actionWeight;
-                dWeightTotal  += psf.diagWeight;
-                aWeightTotal  += psf.actionWeight;
-                return;
+            keys.forEach(key => {
+                const psf = surveyData[key];
+                const raw = scores[key];
+                const isUnknown = (raw === undefined || raw === null || raw === 'unknown'
+                    || String(raw) === '');
+
+                // 유효 multiplier 산출
+                const m = isUnknown
+                    ? getEffectiveMultiplier(key, null)
+                    : getEffectiveMultiplier(key, parseInt(raw));
+
+                if (m === 'FORCE_ONE') {
+                    details.push({ key, risk: 1.0, isUnknown });
+                    dWeightedSum += 1.0 * psf.diagWeight;
+                    aWeightedSum += 1.0 * psf.actionWeight;
+                    dWeightTotal += psf.diagWeight;
+                    aWeightTotal += psf.actionWeight;
+                    return;
+                }
+
+                // 로그 정규화 위험도 (0~1)
+                const maxM = Math.max(...psf.multipliers.filter(x => x !== null));
+                const risk = m <= 1 ? 0 : (Math.log(m) / Math.log(maxM));
+
+                details.push({ key, risk, isUnknown });
+                dWeightedSum += risk * psf.diagWeight;
+                aWeightedSum += risk * psf.actionWeight;
+                dWeightTotal += psf.diagWeight;
+                aWeightTotal += psf.actionWeight;
+            });
+
+            const dScore = dWeightTotal > 0 ? dWeightedSum / dWeightTotal : 0;
+            const aScore = aWeightTotal > 0 ? aWeightedSum / aWeightTotal : 0;
+            const THRESHOLD = 0.10;
+
+            // 판별 근거: 위험도 높은 PSF 상위 3개
+            const topPsfs = details
+                .filter(d => d.risk > 0)
+                .sort((a, b) => b.risk - a.risk)
+                .slice(0, 3)
+                .map(d => psfNames[d.key] + (d.isUnknown ? '(모름)' : ''));
+
+            let type, nhep, label, reason;
+            if (dScore > aScore + THRESHOLD) {
+                type = 'diagnosis';
+                nhep = 0.01;
+                label = '진단(Diagnosis)';
+                reason = `진단 관련 PSF 부하(${(dScore * 100).toFixed(1)}%)가 수행 관련 PSF 부하(${(aScore * 100).toFixed(1)}%)보다 높음`;
+            } else if (aScore > dScore + THRESHOLD) {
+                type = 'action';
+                nhep = 0.001;
+                label = '수행(Action)';
+                reason = `수행 관련 PSF 부하(${(aScore * 100).toFixed(1)}%)가 진단 관련 PSF 부하(${(dScore * 100).toFixed(1)}%)보다 높음`;
+            } else {
+                type = 'mixed';
+                nhep = 0.01;
+                label = '혼합(보수적 진단 적용)';
+                reason = `진단(${(dScore * 100).toFixed(1)}%)·수행(${(aScore * 100).toFixed(1)}%) PSF 부하 차이가 작아 보수적으로 진단 기준 적용`;
             }
 
-            // 로그 정규화 위험도 (0~1)
-            const maxM = Math.max(...psf.multipliers.filter(x => x !== null));
-            const risk = m <= 1 ? 0 : (Math.log(m) / Math.log(maxM));
-
-            details.push({ key, risk, isUnknown });
-            dWeightedSum  += risk * psf.diagWeight;
-            aWeightedSum  += risk * psf.actionWeight;
-            dWeightTotal  += psf.diagWeight;
-            aWeightTotal  += psf.actionWeight;
-        });
-
-        const dScore = dWeightTotal > 0 ? dWeightedSum / dWeightTotal : 0;
-        const aScore = aWeightTotal > 0 ? aWeightedSum / aWeightTotal : 0;
-        const THRESHOLD = 0.10;
-
-        // 판별 근거: 위험도 높은 PSF 상위 3개
-        const topPsfs = details
-            .filter(d => d.risk > 0)
-            .sort((a, b) => b.risk - a.risk)
-            .slice(0, 3)
-            .map(d => psfNames[d.key] + (d.isUnknown ? '(모름)' : ''));
-
-        let type, nhep, label, reason;
-        if (dScore > aScore + THRESHOLD) {
-            type  = 'diagnosis';
-            nhep  = 0.01;
-            label = '진단(Diagnosis)';
-            reason = `진단 관련 PSF 부하(${(dScore*100).toFixed(1)}%)가 수행 관련 PSF 부하(${(aScore*100).toFixed(1)}%)보다 높음`;
-        } else if (aScore > dScore + THRESHOLD) {
-            type  = 'action';
-            nhep  = 0.001;
-            label = '수행(Action)';
-            reason = `수행 관련 PSF 부하(${(aScore*100).toFixed(1)}%)가 진단 관련 PSF 부하(${(dScore*100).toFixed(1)}%)보다 높음`;
-        } else {
-            type  = 'mixed';
-            nhep  = 0.01;
-            label = '혼합(보수적 진단 적용)';
-            reason = `진단(${(dScore*100).toFixed(1)}%)·수행(${(aScore*100).toFixed(1)}%) PSF 부하 차이가 작아 보수적으로 진단 기준 적용`;
+            return { type, nhep, label, dScore, aScore, reason, topPsfs };
         }
 
-        return { type, nhep, label, dScore, aScore, reason, topPsfs };
-    }
+        // =====================================================================
+        // calculateHEP(scores):
+        //   원본 SPAR-H 수식 + BN 부분정보 처리 + 작업유형 자동 판별 통합
+        //
+        //   Step 1: classifyTaskType() → NHEP 결정
+        //   Step 2: 각 PSF 유효 multiplier 수집
+        //           선택됨 → SPAR-H multiplier
+        //           모름   → BN 사전확률 기대 multiplier
+        //           forceOne → 즉시 HEP=1.0
+        //   Step 3: 부정적 PSF 수 카운트 (multiplier > 1)
+        //   Step 4: SPAR-H 수식 적용
+        //           부정적 < 3: HEP = NHEP × ∏Si              [수식 1]
+        //           부정적 ≥ 3: HEP = (NHEP×∏Si)/(NHEP×(∏Si-1)+1)  [수식 2]
+        //
+        //   반환: { hep, taskTypeResult }
+        // =====================================================================
+        function calculateHEP(scores) {
+            const taskTypeResult = classifyTaskType(scores);
+            const NHEP = taskTypeResult.nhep;
+            const keys = Object.keys(surveyData);
+            const multipliers = [];
 
-    // =====================================================================
-    // calculateHEP(scores):
-    //   원본 SPAR-H 수식 + BN 부분정보 처리 + 작업유형 자동 판별 통합
-    //
-    //   Step 1: classifyTaskType() → NHEP 결정
-    //   Step 2: 각 PSF 유효 multiplier 수집
-    //           선택됨 → SPAR-H multiplier
-    //           모름   → BN 사전확률 기대 multiplier
-    //           forceOne → 즉시 HEP=1.0
-    //   Step 3: 부정적 PSF 수 카운트 (multiplier > 1)
-    //   Step 4: SPAR-H 수식 적용
-    //           부정적 < 3: HEP = NHEP × ∏Si              [수식 1]
-    //           부정적 ≥ 3: HEP = (NHEP×∏Si)/(NHEP×(∏Si-1)+1)  [수식 2]
-    //
-    //   반환: { hep, taskTypeResult }
-    // =====================================================================
-    function calculateHEP(scores) {
-        const taskTypeResult = classifyTaskType(scores);
-        const NHEP = taskTypeResult.nhep;
-        const keys = Object.keys(surveyData);
-        const multipliers = [];
+            for (const key of keys) {
+                const raw = scores[key];
+                const isUnknown = (raw === undefined || raw === null || raw === 'unknown'
+                    || String(raw) === '');
+                const idx = isUnknown ? null : parseInt(raw);
+                const m = getEffectiveMultiplier(key, idx);
+                if (m === 'FORCE_ONE') return { hep: 1.0, taskTypeResult };
+                multipliers.push(m);
+            }
 
-        for (const key of keys) {
-            const raw = scores[key];
-            const isUnknown = (raw === undefined || raw === null || raw === 'unknown'
-                               || String(raw) === '');
-            const idx = isUnknown ? null : parseInt(raw);
-            const m = getEffectiveMultiplier(key, idx);
-            if (m === 'FORCE_ONE') return { hep: 1.0, taskTypeResult };
-            multipliers.push(m);
+            const negativeCount = multipliers.filter(m => m > 1).length;
+            const productSi = multipliers.reduce((acc, m) => acc * m, 1);
+
+            let hep;
+            if (negativeCount < 3) {
+                hep = NHEP * productSi;
+            } else {
+                hep = (NHEP * productSi) / (NHEP * (productSi - 1) + 1);
+            }
+
+            return { hep: Math.min(1.0, Math.max(0.0, hep)), taskTypeResult };
         }
 
-        const negativeCount = multipliers.filter(m => m > 1).length;
-        const productSi = multipliers.reduce((acc, m) => acc * m, 1);
-
-        let hep;
-        if (negativeCount < 3) {
-            hep = NHEP * productSi;
-        } else {
-            hep = (NHEP * productSi) / (NHEP * (productSi - 1) + 1);
+        // =====================================================================
+        // scaleEPC: PSF 관리 차트 기여도 계산 (HEP 계산과 무관)
+        // =====================================================================
+        function scaleEPC(key, index) {
+            const optionCount = surveyData[key]?.options.length ?? 3;
+            if (optionCount <= 1) return 0;
+            return (optionCount - 1 - index) / (optionCount - 1);
         }
 
-        return { hep: Math.min(1.0, Math.max(0.0, hep)), taskTypeResult };
-    }
-
-    // =====================================================================
-    // scaleEPC: PSF 관리 차트 기여도 계산 (HEP 계산과 무관)
-    // =====================================================================
-    function scaleEPC(key, index) {
-        const optionCount = surveyData[key]?.options.length ?? 3;
-        if (optionCount <= 1) return 0;
-        return (optionCount - 1 - index) / (optionCount - 1);
-    }
-
-    // =====================================================================
-    // generateSurveyQuestions: 설문 UI 생성
-    //   각 PSF 항목 끝에 "모름/판단불가" 라디오 버튼 추가
-    // =====================================================================
-    function generateSurveyQuestions() {
-        const container = document.getElementById('surveyQuestions');
-        let html = '';
-        Object.keys(surveyData).forEach(key => {
-            const item = surveyData[key];
-            html += `
+        // =====================================================================
+        // generateSurveyQuestions: 설문 UI 생성
+        //   각 PSF 항목 끝에 "모름/판단불가" 라디오 버튼 추가
+        // =====================================================================
+        function generateSurveyQuestions() {
+            const container = document.getElementById('surveyQuestions');
+            let html = '';
+            Object.keys(surveyData).forEach(key => {
+                const item = surveyData[key];
+                html += `
             <div class="survey-card">
               <div class="survey-card-top">
                 <div>
@@ -581,193 +945,193 @@
                   <div class="survey-card-hint">${item.hint}</div>
                 </div>
                 <div class="survey-options">`;
-            item.options.forEach((opt, idx) => {
-                html += `
+                item.options.forEach((opt, idx) => {
+                    html += `
                   <input type="radio" id="${key}-${idx}" name="${key}" value="${idx}"
                     class="survey-option-input" onchange="onPsfChange()">
                   <label for="${key}-${idx}" class="survey-option-label">${opt}</label>`;
-            });
-            // 모름 선택지
-            html += `
+                });
+                // 모름 선택지
+                html += `
                   <input type="radio" id="${key}-unknown" name="${key}" value="unknown"
                     class="survey-option-input" onchange="onPsfChange()">
                   <label for="${key}-unknown" class="survey-option-label unknown-label">모름/판단불가</label>
                 </div>
               </div>
             </div>`;
-        });
-        container.innerHTML = html;
-
-        // 선택 시 스타일 적용
-        document.querySelectorAll('.survey-option-input').forEach(radio => {
-            radio.addEventListener('change', e => {
-                const name = e.target.name;
-                document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
-                    const lbl = r.nextElementSibling;
-                    lbl.style.backgroundColor = '';
-                    lbl.style.color = '';
-                    lbl.style.borderColor = '';
-                });
-                if (e.target.checked) {
-                    const lbl = e.target.nextElementSibling;
-                    if (e.target.value === 'unknown') {
-                        lbl.style.backgroundColor = '#6c757d';
-                        lbl.style.color = '#fff';
-                        lbl.style.borderColor = '#6c757d';
-                    } else {
-                        lbl.style.backgroundColor = 'var(--primary-color)';
-                        lbl.style.color = '#fff';
-                        lbl.style.borderColor = 'var(--primary-color)';
-                    }
-                }
             });
-        });
-    }
+            container.innerHTML = html;
 
-    // =====================================================================
-    // onPsfChange: PSF 선택 변경 시
-    //   제출 버튼 활성화 여부 확인 + 실시간 미리보기 업데이트
-    // =====================================================================
-    function onPsfChange() {
-        checkSurveyCompletion();
-        updatePreview();
-    }
+            // 선택 시 스타일 적용
+            document.querySelectorAll('.survey-option-input').forEach(radio => {
+                radio.addEventListener('change', e => {
+                    const name = e.target.name;
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                        const lbl = r.nextElementSibling;
+                        lbl.style.backgroundColor = '';
+                        lbl.style.color = '';
+                        lbl.style.borderColor = '';
+                    });
+                    if (e.target.checked) {
+                        const lbl = e.target.nextElementSibling;
+                        if (e.target.value === 'unknown') {
+                            lbl.style.backgroundColor = '#6c757d';
+                            lbl.style.color = '#fff';
+                            lbl.style.borderColor = '#6c757d';
+                        } else {
+                            lbl.style.backgroundColor = 'var(--primary-color)';
+                            lbl.style.color = '#fff';
+                            lbl.style.borderColor = 'var(--primary-color)';
+                        }
+                    }
+                });
+            });
+        }
 
-    function checkSurveyCompletion() {
-        const form = document.getElementById('hepSurveyForm');
-        const allAnswered = Object.keys(surveyData).every(key =>
-            form.querySelector(`input[name="${key}"]:checked`) !== null
-        );
-        document.getElementById('submitBtn').disabled = !allAnswered;
-    }
+        // =====================================================================
+        // onPsfChange: PSF 선택 변경 시
+        //   제출 버튼 활성화 여부 확인 + 실시간 미리보기 업데이트
+        // =====================================================================
+        function onPsfChange() {
+            checkSurveyCompletion();
+            updatePreview();
+        }
 
-    // =====================================================================
-    // updatePreview: 설문 중 실시간 HEP 미리보기
-    // =====================================================================
-    function updatePreview() {
-        const form = document.getElementById('hepSurveyForm');
-        const keys = Object.keys(surveyData);
-        const allAnswered = keys.every(key =>
-            form.querySelector(`input[name="${key}"]:checked`) !== null
-        );
-        const preview = document.getElementById('previewResult');
-        if (!allAnswered) { preview.style.display = 'none'; return; }
+        function checkSurveyCompletion() {
+            const form = document.getElementById('hepSurveyForm');
+            const allAnswered = Object.keys(surveyData).every(key =>
+                form.querySelector(`input[name="${key}"]:checked`) !== null
+            );
+            document.getElementById('submitBtn').disabled = !allAnswered;
+        }
 
-        const scores = {};
-        keys.forEach(key => {
-            const checked = form.querySelector(`input[name="${key}"]:checked`);
-            scores[key] = checked ? checked.value : null;
-        });
+        // =====================================================================
+        // updatePreview: 설문 중 실시간 HEP 미리보기
+        // =====================================================================
+        function updatePreview() {
+            const form = document.getElementById('hepSurveyForm');
+            const keys = Object.keys(surveyData);
+            const allAnswered = keys.every(key =>
+                form.querySelector(`input[name="${key}"]:checked`) !== null
+            );
+            const preview = document.getElementById('previewResult');
+            if (!allAnswered) { preview.style.display = 'none'; return; }
 
-        const { hep, taskTypeResult } = calculateHEP(scores);
-        const unknownPsfs = keys.filter(k => scores[k] === 'unknown').map(k => psfNames[k]);
+            const scores = {};
+            keys.forEach(key => {
+                const checked = form.querySelector(`input[name="${key}"]:checked`);
+                scores[key] = checked ? checked.value : null;
+            });
 
-        const typeClass = taskTypeResult.type === 'diagnosis' ? 'result-diagnosis'
-                        : taskTypeResult.type === 'action'    ? 'result-action'
-                        : 'result-mixed';
-        const typeBadge = taskTypeResult.type === 'diagnosis'
-                        ? '<span style="color:#856404;font-weight:600;">진단(Diagnosis)</span>'
-                        : taskTypeResult.type === 'action'
-                        ? '<span style="color:#0c5460;font-weight:600;">수행(Action)</span>'
-                        : '<span style="color:#721c24;font-weight:600;">혼합(보수적 진단 적용)</span>';
+            const { hep, taskTypeResult } = calculateHEP(scores);
+            const unknownPsfs = keys.filter(k => scores[k] === 'unknown').map(k => psfNames[k]);
 
-        let html = `<div class="result-box ${typeClass}">
+            const typeClass = taskTypeResult.type === 'diagnosis' ? 'result-diagnosis'
+                : taskTypeResult.type === 'action' ? 'result-action'
+                    : 'result-mixed';
+            const typeBadge = taskTypeResult.type === 'diagnosis'
+                ? '<span style="color:#856404;font-weight:600;">진단(Diagnosis)</span>'
+                : taskTypeResult.type === 'action'
+                    ? '<span style="color:#0c5460;font-weight:600;">수행(Action)</span>'
+                    : '<span style="color:#721c24;font-weight:600;">혼합(보수적 진단 적용)</span>';
+
+            let html = `<div class="result-box ${typeClass}">
             <b>▶ 작업 유형 판단 결과: ${typeBadge}</b><br>
             <b>근거:</b> ${taskTypeResult.reason}<br>
             <b>주요 위험 PSF:</b> ${taskTypeResult.topPsfs.length > 0 ? taskTypeResult.topPsfs.join(', ') : '없음'}<br>
             <b>적용 NHEP:</b> ${taskTypeResult.nhep} (${taskTypeResult.type === 'action' ? '수행' : '진단'} 기준)<br>
             <b>HEP =</b> <span style="font-size:1.2em;font-weight:700;color:var(--danger-color);">${hep.toFixed(4)}</span>
             &nbsp;&nbsp; 성공 확률: <span style="font-weight:600;">${(1 - hep).toFixed(4)}</span>`;
-        if (unknownPsfs.length > 0) {
-            html += `<br><span style="font-size:0.85em;color:#888;">※ 모름 처리된 PSF (BN 사전확률 적용): ${unknownPsfs.join(', ')}</span>`;
+            if (unknownPsfs.length > 0) {
+                html += `<br><span style="font-size:0.85em;color:#888;">※ 모름 처리된 PSF (BN 사전확률 적용): ${unknownPsfs.join(', ')}</span>`;
+            }
+            html += `</div>`;
+
+            preview.innerHTML = html;
+            preview.style.display = 'block';
         }
-        html += `</div>`;
 
-        preview.innerHTML = html;
-        preview.style.display = 'block';
-    }
+        function submitSurvey(event) {
+            event.preventDefault();
+            const editingRowId = document.getElementById('editingRowId').value;
+            let taskName = document.getElementById('taskNameInput').value.trim();
 
-    function submitSurvey(event) {
-        event.preventDefault();
-        const editingRowId = document.getElementById('editingRowId').value;
-        let taskName = document.getElementById('taskNameInput').value.trim();
+            if (!taskName) {
+                const rows = document.querySelectorAll('#taskTable tbody tr');
+                const existingCount = rows.length === 1 && rows[0].id === 'no-task-message' ? 0 : rows.length;
+                const baseCount = editingRowId ? existingCount - 1 : existingCount;
+                let autoIndex = baseCount + 1;
+                const usedNames = new Set();
+                document.querySelectorAll('#taskTable tbody tr').forEach(r => {
+                    if (r.dataset.name) usedNames.add(r.dataset.name.trim());
+                });
+                while (usedNames.has(`작업${autoIndex}`)) autoIndex++;
+                taskName = `작업${autoIndex}`;
+            }
 
-        if (!taskName) {
             const rows = document.querySelectorAll('#taskTable tbody tr');
-            const existingCount = rows.length === 1 && rows[0].id === 'no-task-message' ? 0 : rows.length;
-            const baseCount = editingRowId ? existingCount - 1 : existingCount;
-            let autoIndex = baseCount + 1;
-            const usedNames = new Set();
-            document.querySelectorAll('#taskTable tbody tr').forEach(r => {
-                if (r.dataset.name) usedNames.add(r.dataset.name.trim());
-            });
-            while (usedNames.has(`작업${autoIndex}`)) autoIndex++;
-            taskName = `작업${autoIndex}`;
-        }
-
-        const rows = document.querySelectorAll('#taskTable tbody tr');
-        let isDuplicate = false;
-        if (rows.length > 0 && rows[0].id !== 'no-task-message') {
-            for (const row of rows) {
-                if (editingRowId && row.id === editingRowId) continue;
-                if (row.dataset.name && row.dataset.name.trim() === taskName) {
-                    isDuplicate = true; break;
+            let isDuplicate = false;
+            if (rows.length > 0 && rows[0].id !== 'no-task-message') {
+                for (const row of rows) {
+                    if (editingRowId && row.id === editingRowId) continue;
+                    if (row.dataset.name && row.dataset.name.trim() === taskName) {
+                        isDuplicate = true; break;
+                    }
                 }
             }
+            if (isDuplicate) { alert('이미 존재하는 작업명입니다. 다른 이름을 사용해 주세요.'); return; }
+
+            const form = document.getElementById('hepSurveyForm');
+            const scores = { name: taskName };
+            Object.keys(surveyData).forEach(key => {
+                const checked = form.querySelector(`input[name="${key}"]:checked`);
+                scores[key] = checked ? checked.value : null;
+            });
+
+            const { hep, taskTypeResult } = calculateHEP(scores);
+            scores.hep = hep.toFixed(4);
+            scores.successProbability = (1.0 - hep).toFixed(4);
+            scores.taskType = taskTypeResult.type;
+            scores.taskTypeLabel = taskTypeResult.label;
+            scores.taskTypeReason = taskTypeResult.reason;
+            scores.nhep = taskTypeResult.nhep;
+
+            if (editingRowId) {
+                updateTaskInTable(document.getElementById(editingRowId), scores);
+            } else {
+                addTaskToTable(scores);
+            }
+            closeSurveyModal();
         }
-        if (isDuplicate) { alert('이미 존재하는 작업명입니다. 다른 이름을 사용해 주세요.'); return; }
 
-        const form = document.getElementById('hepSurveyForm');
-        const scores = { name: taskName };
-        Object.keys(surveyData).forEach(key => {
-            const checked = form.querySelector(`input[name="${key}"]:checked`);
-            scores[key] = checked ? checked.value : null;
-        });
-
-        const { hep, taskTypeResult } = calculateHEP(scores);
-        scores.hep = hep.toFixed(4);
-        scores.successProbability = (1.0 - hep).toFixed(4);
-        scores.taskType     = taskTypeResult.type;
-        scores.taskTypeLabel = taskTypeResult.label;
-        scores.taskTypeReason = taskTypeResult.reason;
-        scores.nhep         = taskTypeResult.nhep;
-
-        if (editingRowId) {
-            updateTaskInTable(document.getElementById(editingRowId), scores);
-        } else {
-            addTaskToTable(scores);
+        function addTaskToTable(taskData) {
+            const tableBody = document.getElementById('taskTable').querySelector('tbody');
+            const noMsg = document.getElementById('no-task-message');
+            if (noMsg) noMsg.remove();
+            const newRow = tableBody.insertRow();
+            newRow.id = `task-${crypto.randomUUID()}`;
+            updateTaskInTable(newRow, taskData);
         }
-        closeSurveyModal();
-    }
 
-    function addTaskToTable(taskData) {
-        const tableBody = document.getElementById('taskTable').querySelector('tbody');
-        const noMsg = document.getElementById('no-task-message');
-        if (noMsg) noMsg.remove();
-        const newRow = tableBody.insertRow();
-        newRow.id = `task-${crypto.randomUUID()}`;
-        updateTaskInTable(newRow, taskData);
-    }
+        function updateTaskInTable(row, taskData) {
+            for (const key in taskData) row.dataset[key] = taskData[key];
 
-    function updateTaskInTable(row, taskData) {
-        for (const key in taskData) row.dataset[key] = taskData[key];
+            const getTextOption = (key, value) => {
+                if (!surveyData[key]) return value;
+                if (value === 'unknown' || value === '') return '<span style="color:#aaa;">?</span>';
+                const idx = parseInt(value);
+                return (!isNaN(idx) && surveyData[key].options[idx] !== undefined)
+                    ? surveyData[key].options[idx] : value;
+            };
 
-        const getTextOption = (key, value) => {
-            if (!surveyData[key]) return value;
-            if (value === 'unknown' || value === '') return '<span style="color:#aaa;">?</span>';
-            const idx = parseInt(value);
-            return (!isNaN(idx) && surveyData[key].options[idx] !== undefined)
-                ? surveyData[key].options[idx] : value;
-        };
+            const typeBadgeClass = taskData.taskType === 'diagnosis' ? 'type-diagnosis'
+                : taskData.taskType === 'action' ? 'type-action'
+                    : 'type-mixed';
+            const typeShort = taskData.taskType === 'diagnosis' ? '진단'
+                : taskData.taskType === 'action' ? '수행'
+                    : '혼합';
 
-        const typeBadgeClass = taskData.taskType === 'diagnosis' ? 'type-diagnosis'
-                             : taskData.taskType === 'action'    ? 'type-action'
-                             : 'type-mixed';
-        const typeShort = taskData.taskType === 'diagnosis' ? '진단'
-                        : taskData.taskType === 'action'    ? '수행'
-                        : '혼합';
-
-        row.innerHTML = `
+            row.innerHTML = `
 <td><input type="checkbox" name="task_select" onchange="handleCheckboxChange()"></td>
 <td>${taskData.name}</td>
 <td>${getTextOption('available_time', taskData.available_time)}</td>
@@ -778,340 +1142,357 @@
 <td>${getTextOption('ergonomics', taskData.ergonomics)}</td>
 <td>${getTextOption('fitness', taskData.fitness)}</td>
 <td>${getTextOption('work_processes', taskData.work_processes)}</td>
-<td><span class="type-badge ${typeBadgeClass}" title="${taskData.taskTypeReason}">${typeShort}</span></td>
+<td><span class="type-badge ${typeBadgeClass}" title="${(taskData.taskTypeReason || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}">${typeShort}</span></td>
 <td><strong style="color:var(--danger-color);">${taskData.hep}</strong></td>
 <td><strong>${taskData.successProbability}</strong></td>
 <td class="actions">
   <button class="btn btn-small btn-edit" onclick="editTask(this)">수정</button>
   <button class="btn btn-small btn-danger" onclick="deleteTask(this)">삭제</button>
 </td>`;
-    }
-
-    function editTask(button) { openSurveyModal(button.closest('tr')); }
-
-    function deleteTask(button) {
-        const row = button.closest('tr');
-        const tableBody = row.parentNode;
-        row.remove();
-        if (tableBody.rows.length === 0) {
-            tableBody.innerHTML = `<tr id="no-task-message"><td colspan="14">아직 평가된 작업이 없습니다.</td></tr>`;
         }
-        updateMoveButtonsState();
-    }
 
-    function openSurveyModal(row = null) {
-        const isMobile = window.innerWidth <= 768;
-        document.getElementById('taskNameInput').disabled = isMobile;
-        const form = document.getElementById('hepSurveyForm');
-        form.reset();
-        document.getElementById('editingRowId').value = '';
-        document.getElementById('previewResult').style.display = 'none';
-        document.querySelectorAll('.survey-option-label').forEach(lbl => {
-            lbl.style.backgroundColor = '';
-            lbl.style.color = '';
-            lbl.style.borderColor = '';
-        });
+        function editTask(button) { openSurveyModal(button.closest('tr')); }
 
-        if (row) {
-            document.getElementById('modalTitle').textContent = '기 입력된 작업 수정';
-            document.getElementById('submitBtn').textContent = '수정 완료';
-            document.getElementById('editingRowId').value = row.id;
-            document.getElementById('taskNameInput').value = row.dataset.name;
-            Object.keys(surveyData).forEach(key => {
-                const value = row.dataset[key];
-                if (value !== undefined && value !== '') {
-                    const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
-                    if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
-                }
+        function deleteTask(button) {
+            const row = button.closest('tr');
+            const tableBody = row.parentNode;
+            row.remove();
+            if (tableBody.rows.length === 0) {
+                tableBody.innerHTML = `<tr id="no-task-message"><td colspan="14">아직 평가된 작업이 없습니다.</td></tr>`;
+            }
+            updateMoveButtonsState();
+        }
+
+        function openSurveyModal(row = null) {
+            const isMobile = window.innerWidth <= 768;
+            document.getElementById('taskNameInput').disabled = isMobile;
+            const form = document.getElementById('hepSurveyForm');
+            form.reset();
+            document.getElementById('editingRowId').value = '';
+            document.getElementById('previewResult').style.display = 'none';
+            document.querySelectorAll('.survey-option-label').forEach(lbl => {
+                lbl.style.backgroundColor = '';
+                lbl.style.color = '';
+                lbl.style.borderColor = '';
             });
-            updatePreview();
-        } else {
-            document.getElementById('modalTitle').textContent = '휴먼에러 요인분석 설문지';
-            document.getElementById('submitBtn').textContent = '추가하기';
+
+            if (row) {
+                document.getElementById('modalTitle').textContent = '기 입력된 작업 수정';
+                document.getElementById('submitBtn').textContent = '수정 완료';
+                document.getElementById('editingRowId').value = row.id;
+                document.getElementById('taskNameInput').value = row.dataset.name;
+                Object.keys(surveyData).forEach(key => {
+                    const value = row.dataset[key];
+                    if (value !== undefined && value !== '') {
+                        const radio = form.querySelector(`input[name="${key}"][value="${value}"]`);
+                        if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); }
+                    }
+                });
+                updatePreview();
+            } else {
+                document.getElementById('modalTitle').textContent = '휴먼에러 요인분석 설문지';
+                document.getElementById('submitBtn').textContent = '추가하기';
+            }
+            document.getElementById('surveyModal').style.display = 'flex';
+            document.querySelector('#surveyModal .modal-content').scrollTop = 0;
+            checkSurveyCompletion();
         }
-        document.getElementById('surveyModal').style.display = 'flex';
-        document.querySelector('#surveyModal .modal-content').scrollTop = 0;
-        checkSurveyCompletion();
-    }
 
-    function closeSurveyModal() { document.getElementById('surveyModal').style.display = 'none'; }
-    function handleCheckboxChange() { updateMoveButtonsState(); }
+        function closeSurveyModal() { document.getElementById('surveyModal').style.display = 'none'; }
+        function handleCheckboxChange() { updateMoveButtonsState(); }
 
-    function updateMoveButtonsState() {
-        const checked = document.querySelectorAll('input[name="task_select"]:checked');
-        document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected'));
-        checked.forEach(b => b.closest('tr').classList.add('selected'));
-        const single = checked.length === 1;
-        const any    = checked.length > 0;
-        document.getElementById('moveUpBtn').disabled   = !single || !checked[0].closest('tr').previousElementSibling;
-        document.getElementById('moveDownBtn').disabled = !single || !checked[0].closest('tr').nextElementSibling;
-        document.getElementById('managePsfBtn').disabled          = !any;
-        document.getElementById('manageSelectedTasksBtn').disabled = !any;
-    }
-
-    function selectAllTasks() {
-        document.querySelectorAll('#taskTable tbody input[name="task_select"]').forEach(cb => cb.checked = true);
-        updateMoveButtonsState();
-    }
-    function deselectAllTasks() {
-        document.querySelectorAll('#taskTable tbody input[name="task_select"]').forEach(cb => cb.checked = false);
-        updateMoveButtonsState();
-    }
-    function moveRow(direction) {
-        const cb = document.querySelector('input[name="task_select"]:checked');
-        if (!cb) return;
-        const row = cb.closest('tr');
-        if (direction === 'up' && row.previousElementSibling)
-            row.parentNode.insertBefore(row, row.previousElementSibling);
-        else if (direction === 'down' && row.nextElementSibling)
-            row.parentNode.insertBefore(row.nextElementSibling, row);
-        updateMoveButtonsState();
-    }
-
-    function saveTableAsCsv() {
-        const rows = document.getElementById('taskTable').querySelectorAll('tbody tr');
-        if (rows.length === 0 || (rows.length === 1 && rows[0].id === 'no-task-message')) {
-            alert("저장할 데이터가 없습니다."); return;
+        function updateMoveButtonsState() {
+            const checked = document.querySelectorAll('input[name="task_select"]:checked');
+            document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('selected'));
+            checked.forEach(b => b.closest('tr').classList.add('selected'));
+            const single = checked.length === 1;
+            const any = checked.length > 0;
+            document.getElementById('moveUpBtn').disabled = !single || !checked[0].closest('tr').previousElementSibling;
+            document.getElementById('moveDownBtn').disabled = !single || !checked[0].closest('tr').nextElementSibling;
+            document.getElementById('managePsfBtn').disabled = !any;
+            document.getElementById('manageSelectedTasksBtn').disabled = !any;
         }
-        let csv = "작업 단계,성공 확률\n";
-        let count = 0;
-        rows.forEach(row => {
-            if (row.id === 'no-task-message' || !row.dataset.name) return;
-            csv += `"${row.dataset.name.replace(/"/g,'""')}",${row.dataset.successProbability}\n`;
-            count++;
+
+        function selectAllTasks() {
+            document.querySelectorAll('#taskTable tbody input[name="task_select"]').forEach(cb => cb.checked = true);
+            updateMoveButtonsState();
+        }
+        function deselectAllTasks() {
+            document.querySelectorAll('#taskTable tbody input[name="task_select"]').forEach(cb => cb.checked = false);
+            updateMoveButtonsState();
+        }
+        function moveRow(direction) {
+            const cb = document.querySelector('input[name="task_select"]:checked');
+            if (!cb) return;
+            const row = cb.closest('tr');
+            if (direction === 'up' && row.previousElementSibling)
+                row.parentNode.insertBefore(row, row.previousElementSibling);
+            else if (direction === 'down' && row.nextElementSibling)
+                row.parentNode.insertBefore(row.nextElementSibling, row);
+            updateMoveButtonsState();
+        }
+
+        function saveTableAsCsv() {
+            const rows = document.getElementById('taskTable').querySelectorAll('tbody tr');
+            if (rows.length === 0 || (rows.length === 1 && rows[0].id === 'no-task-message')) {
+                alert("저장할 데이터가 없습니다."); return;
+            }
+            let csv = "작업 단계,성공 확률\n";
+            let count = 0;
+            rows.forEach(row => {
+                if (row.id === 'no-task-message' || !row.dataset.name) return;
+                csv += `"${row.dataset.name.replace(/"/g, '""')}",${row.dataset.successProbability}\n`;
+                count++;
+            });
+            if (count === 0) { alert("저장할 데이터가 없습니다."); return; }
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'hep_results.csv';
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            alert(`저장 완료: hep_results.csv (${count}개)`);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            generateSurveyQuestions();
+            document.getElementById('csvFileInput').addEventListener('change', loadDataFromCsv);
         });
-        if (count === 0) { alert("저장할 데이터가 없습니다."); return; }
-        const blob = new Blob(["\ufeff"+csv], {type:'text/csv;charset=utf-8;'});
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = 'hep_results.csv';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        alert(`저장 완료: hep_results.csv (${count}개)`);
-    }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        generateSurveyQuestions();
-        document.getElementById('csvFileInput').addEventListener('change', loadDataFromCsv);
-    });
+        function openHepManagementModal() {
+            const checked = document.querySelectorAll('input[name="task_select"]:checked');
+            const tasks = [];
+            checked.forEach(b => {
+                const row = b.closest('tr');
+                if (row.dataset.hep) tasks.push({ name: row.dataset.name, hep: parseFloat(row.dataset.hep) });
+            });
+            const modal = document.getElementById('hepManagementModal');
+            const canvas = document.getElementById('hepChartCanvas').parentNode;
+            const noMsg = document.getElementById('no-chart-message');
+            const stats = document.getElementById('managementStats');
+            if (tasks.length === 0) {
+                canvas.style.display = 'none'; stats.style.display = 'none';
+                noMsg.style.display = 'block'; modal.style.display = 'flex'; return;
+            }
+            canvas.style.display = 'block'; stats.style.display = 'flex'; noMsg.style.display = 'none';
 
-    function openHepManagementModal() {
-        const checked = document.querySelectorAll('input[name="task_select"]:checked');
-        const tasks = [];
-        checked.forEach(b => {
-            const row = b.closest('tr');
-            if (row.dataset.hep) tasks.push({ name: row.dataset.name, hep: parseFloat(row.dataset.hep) });
-        });
-        const modal = document.getElementById('hepManagementModal');
-        const canvas = document.getElementById('hepChartCanvas').parentNode;
-        const noMsg  = document.getElementById('no-chart-message');
-        const stats  = document.getElementById('managementStats');
-        if (tasks.length === 0) {
-            canvas.style.display='none'; stats.style.display='none';
-            noMsg.style.display='block'; modal.style.display='flex'; return;
-        }
-        canvas.style.display='block'; stats.style.display='flex'; noMsg.style.display='none';
+            const labels = tasks.map(t => t.name);
+            const vals = tasks.map(t => t.hep);
+            const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+            const std = vals.length > 1
+                ? Math.sqrt(vals.map(x => Math.pow(x - avg, 2)).reduce((a, b) => a + b, 0) / (vals.length - 1)) : 0;
+            const ucl = avg + 2 * std, lcl = Math.max(0, avg - 2 * std);
 
-        const labels = tasks.map(t=>t.name);
-        const vals   = tasks.map(t=>t.hep);
-        const avg    = vals.reduce((a,b)=>a+b,0)/vals.length;
-        const std    = vals.length>1
-            ? Math.sqrt(vals.map(x=>Math.pow(x-avg,2)).reduce((a,b)=>a+b,0)/(vals.length-1)) : 0;
-        const ucl = avg+2*std, lcl = Math.max(0,avg-2*std);
-
-        stats.innerHTML = `
+            stats.innerHTML = `
             <div class="stat-avg"><span>평균(AVG)</span><br>${avg.toFixed(4)}</div>
             <div class="stat-stddev"><span>표준편차(σ)</span><br>${std.toFixed(4)}</div>
             <div class="stat-ucl"><span>UCL(+2σ)</span><br>${ucl.toFixed(4)}</div>
             <div class="stat-lcl"><span>LCL(-2σ)</span><br>${lcl.toFixed(4)}</div>`;
 
-        const colors = vals.map(h => h>ucl?'rgba(217,48,37,0.7)':h>avg?'rgba(255,193,7,0.7)':'rgba(40,167,69,0.7)');
-        const ctx = document.getElementById('hepChartCanvas').getContext('2d');
-        if (hepChartInstance) hepChartInstance.destroy();
-        hepChartInstance = new Chart(ctx, {
-            type:'bar',
-            data:{ labels, datasets:[
-                { label:'HEP', data:vals, backgroundColor:colors, borderColor:colors.map(c=>c.replace('0.7','1')), borderWidth:1, order:1 },
-                { type:'line', label:'평균', data:Array(labels.length).fill(avg), borderColor:'var(--primary-color)', borderWidth:2, pointRadius:0, fill:false, borderDash:[5,5], order:0 },
-                { type:'line', label:'UCL(+2σ)', data:Array(labels.length).fill(ucl), borderColor:'red', borderWidth:2, pointRadius:0, fill:false, order:0 },
-                { type:'line', label:'LCL(-2σ)', data:Array(labels.length).fill(lcl), borderColor:'green', borderWidth:2, pointRadius:0, fill:false, order:0 }
-            ]},
-            options:{
-                responsive:true, maintainAspectRatio:false,
-                scales:{ y:{beginAtZero:true, suggestedMax:Math.max(...vals,ucl)*1.1} },
-                plugins:{
-                    legend:{display:true, labels:{filter:item=>item.datasetIndex!==0}},
-                    tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}`}}
-                }
-            },
-            plugins:[{ id:'lineLabels', afterDatasetsDraw(chart){
-                const {ctx,chartArea:{top,bottom,left,width}} = chart;
-                chart.data.datasets.forEach((ds,i)=>{
-                    if(ds.type!=='line') return;
-                    const meta=chart.getDatasetMeta(i);
-                    const yp=meta.data[0].y;
-                    if(yp<top||yp>bottom) return;
-                    ctx.save(); ctx.font='600 12px sans-serif';
-                    ctx.textAlign='center'; ctx.textBaseline='bottom';
-                    ctx.fillStyle=ds.label.includes('UCL')?'red':ds.label.includes('LCL')?'green':'#333';
-                    ctx.fillText(`${ds.label}: ${ds.data[0].toFixed(4)}`, left+width/2, yp-2);
-                    ctx.restore();
-                });
-            }}]
-        });
-        modal.style.display='flex';
-    }
-    function closeHepManagementModal() { document.getElementById('hepManagementModal').style.display='none'; }
-
-    function openPsfManagementModal() {
-        const checked = document.querySelectorAll('input[name="task_select"]:checked');
-        const psfKeys = Object.keys(hepWeights);
-        const contrib = {}; psfKeys.forEach(k=>contrib[k]=0);
-        let count = 0;
-        checked.forEach(b=>{
-            const row=b.closest('tr');
-            if(!row.dataset.hep) return;
-            count++;
-            psfKeys.forEach(k=>{
-                const v=row.dataset[k];
-                if(v==='unknown'||v===undefined||v==='') return;
-                const score=parseInt(v);
-                if(isNaN(score)) return;
-                contrib[k] += scaleEPC(k,score)*psfInfluenceWeights[k];
-            });
-        });
-        const modal=document.getElementById('psfManagementModal');
-        const canvas=document.getElementById('psfChartCanvas').parentNode;
-        const noMsg=document.getElementById('no-psf-chart-message');
-        if(count===0){canvas.style.display='none';noMsg.style.display='block';modal.style.display='flex';return;}
-        canvas.style.display='block'; noMsg.style.display='none';
-        psfKeys.forEach(k=>contrib[k]/=count);
-        const psfData=psfKeys.map(k=>({name:psfNames[k],score:contrib[k]})).sort((a,b)=>b.score-a.score);
-        const ctx=document.getElementById('psfChartCanvas').getContext('2d');
-        if(psfChartInstance) psfChartInstance.destroy();
-        const bgColors=['rgba(217,48,37,0.7)','rgba(253,126,20,0.7)','rgba(253,126,20,0.7)',
-                        'rgba(253,126,20,0.7)','rgba(253,126,20,0.7)','rgba(40,167,69,0.7)',
-                        'rgba(40,167,69,0.7)','rgba(40,167,69,0.7)'];
-        psfChartInstance=new Chart(ctx,{
-            type:'bar',
-            data:{labels:psfData.map(d=>d.name), datasets:[{
-                label:'PSF 기여도', data:psfData.map(d=>d.score),
-                backgroundColor:bgColors, borderColor:bgColors.map(c=>c.replace('0.7','1')), borderWidth:1
-            }]},
-            options:{
-                responsive:true, maintainAspectRatio:false,
-                plugins:{
-                    legend:{display:false},
-                    tooltip:{callbacks:{label:ctx=>`기여도: ${(ctx.parsed.y*100).toFixed(2)}%`}},
-                    customLabels:{formatter:v=>(v*100).toFixed(2)+'%',color:'#333',font:{weight:'bold'}}
+            const colors = vals.map(h => h > ucl ? 'rgba(217,48,37,0.7)' : h > avg ? 'rgba(255,193,7,0.7)' : 'rgba(40,167,69,0.7)');
+            const ctx = document.getElementById('hepChartCanvas').getContext('2d');
+            if (hepChartInstance) hepChartInstance.destroy();
+            hepChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels, datasets: [
+                        { label: 'HEP', data: vals, backgroundColor: colors, borderColor: colors.map(c => c.replace('0.7', '1')), borderWidth: 1, order: 1 },
+                        { type: 'line', label: '평균', data: Array(labels.length).fill(avg), borderColor: 'var(--primary-color)', borderWidth: 2, pointRadius: 0, fill: false, borderDash: [5, 5], order: 0 },
+                        { type: 'line', label: 'UCL(+2σ)', data: Array(labels.length).fill(ucl), borderColor: 'red', borderWidth: 2, pointRadius: 0, fill: false, order: 0 },
+                        { type: 'line', label: 'LCL(-2σ)', data: Array(labels.length).fill(lcl), borderColor: 'green', borderWidth: 2, pointRadius: 0, fill: false, order: 0 }
+                    ]
                 },
-                scales:{y:{beginAtZero:true, suggestedMax:Math.max(...psfData.map(d=>d.score))*1.2}}
-            },
-            plugins:[{id:'customLabels',afterDatasetsDraw(chart,_,opt){
-                const {ctx}=chart;
-                ctx.save();
-                ctx.font=`${opt.font?.weight||'normal'} ${opt.font?.size||12}px sans-serif`;
-                ctx.fillStyle=opt.color||'#000';
-                ctx.textAlign='center'; ctx.textBaseline='bottom';
-                chart.data.datasets.forEach((ds,i)=>{
-                    chart.getDatasetMeta(i).data.forEach((bar,j)=>{
-                        const val=ds.data[j];
-                        ctx.fillText(opt.formatter?opt.formatter(val):val, bar.x, bar.y-5);
-                    });
-                });
-                ctx.restore();
-            }}]
-        });
-        modal.style.display='flex';
-    }
-    function closePsfManagementModal(){document.getElementById('psfManagementModal').style.display='none';}
-
-    function saveAllDataAsCsv(){
-        const rows=document.getElementById('taskTable').querySelectorAll('tbody tr');
-        if(rows.length===1&&rows[0].id==='no-task-message'){alert("저장할 데이터가 없습니다.");return;}
-        const headers=["연번","작업명","가용 시간","스트레스","복잡성","경험/훈련",
-                       "절차서","인간공학","직무 적합성","작업 프로세스","작업유형","HEP","성공 확률"];
-        const keys=["name","available_time","stress","complexity","experience",
-                    "procedures","ergonomics","fitness","work_processes","taskTypeLabel","hep","successProbability"];
-        let csv="\ufeff"+headers.join(',')+'\n';
-        rows.forEach((row,i)=>{
-            if(row.id==='no-task-message') return;
-            const data=[(i+1).toString()];
-            keys.forEach(k=>{
-                let v=row.dataset[k]||'';
-                if(k==='name') v=`"${v.replace(/"/g,'""')}"`;
-                data.push(v);
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: { y: { beginAtZero: true, suggestedMax: Math.max(...vals, ucl) * 1.1 } },
+                    plugins: {
+                        legend: { display: true, labels: { filter: item => item.datasetIndex !== 0 } },
+                        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(4)}` } }
+                    }
+                },
+                plugins: [{
+                    id: 'lineLabels', afterDatasetsDraw(chart) {
+                        const { ctx, chartArea: { top, bottom, left, width } } = chart;
+                        chart.data.datasets.forEach((ds, i) => {
+                            if (ds.type !== 'line') return;
+                            const meta = chart.getDatasetMeta(i);
+                            const yp = meta.data[0].y;
+                            if (yp < top || yp > bottom) return;
+                            ctx.save(); ctx.font = '600 12px sans-serif';
+                            ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+                            ctx.fillStyle = ds.label.includes('UCL') ? 'red' : ds.label.includes('LCL') ? 'green' : '#333';
+                            ctx.fillText(`${ds.label}: ${ds.data[0].toFixed(4)}`, left + width / 2, yp - 2);
+                            ctx.restore();
+                        });
+                    }
+                }]
             });
-            csv+=data.join(',')+'\n';
-        });
-        const now=new Date();
-        const ts=`${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}_${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
-        const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-        const a=document.createElement('a');
-        a.href=URL.createObjectURL(blob);
-        a.download=`HEP_BN_SPAR-H_${ts}.csv`;
-        document.body.appendChild(a);a.click();document.body.removeChild(a);
-        alert(`저장 완료: HEP_BN_SPAR-H_${ts}.csv`);
-    }
-
-    function parseCsvLine(line){
-        const result=[]; let cur='',inQ=false;
-        for(let i=0;i<line.length;i++){
-            const ch=line[i];
-            if(inQ){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++;}else inQ=false;}else cur+=ch;}
-            else{if(ch==='"')inQ=true;else if(ch===','){result.push(cur);cur='';}else cur+=ch;}
+            modal.style.display = 'flex';
         }
-        result.push(cur);return result;
-    }
+        function closeHepManagementModal() { document.getElementById('hepManagementModal').style.display = 'none'; }
 
-    function loadDataFromCsv(event){
-        const file=event.target.files[0];
-        if(!file) return;
-        const reader=new FileReader();
-        reader.onload=e=>{
-            const lines=e.target.result.split(/\r?\n/).filter(l=>l.trim()!=='');
-            if(lines.length<=1){alert("불러올 데이터가 없습니다.");return;}
-            const header=lines[0].trim().replace(/^\uFEFF/,'');
-            if(!header.startsWith("연번,작업명")){
-                alert("올바른 형식의 파일이 아닙니다.\n'저장하기'로 저장한 파일을 선택해 주세요.");return;
-            }
-            const tbody=document.getElementById('taskTable').querySelector('tbody');
-            tbody.innerHTML='';
-            let count=0;
-            for(let i=1;i<lines.length;i++){
-                const line=lines[i].trim(); if(!line) continue;
-                const v=parseCsvLine(line);
-                const d={
-                    name:v[1]?.trim()||'',
-                    available_time:v[2]?.trim()||'0', stress:v[3]?.trim()||'0',
-                    complexity:v[4]?.trim()||'0',     experience:v[5]?.trim()||'0',
-                    procedures:v[6]?.trim()||'0',     ergonomics:v[7]?.trim()||'0',
-                    fitness:v[8]?.trim()||'0',         work_processes:v[9]?.trim()||'0',
-                    taskTypeLabel:v[10]?.trim()||'',
-                    taskType: v[10]?.trim().includes('진단')?'diagnosis':v[10]?.trim().includes('수행')?'action':'mixed',
-                    taskTypeReason:'',
-                    hep:v[11]?.trim()||'0',
-                    successProbability:v[12]?.trim()||'0'
-                };
-                if(d.name){addTaskToTable(d);count++;}
-            }
-            if(count>0) alert(`${count}개 작업을 불러왔습니다.`);
-            else alert("불러올 수 있는 데이터가 없습니다.");
-        };
-        reader.readAsText(file,'UTF-8');
-        event.target.value='';
-    }
+        function openPsfManagementModal() {
+            const checked = document.querySelectorAll('input[name="task_select"]:checked');
+            const psfKeys = Object.keys(surveyData);
+            const contrib = {}; psfKeys.forEach(k => contrib[k] = 0);
+            let count = 0;
+            checked.forEach(b => {
+                const row = b.closest('tr');
+                if (!row.dataset.hep) return;
+                count++;
+                psfKeys.forEach(k => {
+                    const v = row.dataset[k];
+                    if (v === 'unknown' || v === undefined || v === '') return;
+                    const score = parseInt(v);
+                    if (isNaN(score)) return;
+                    contrib[k] += scaleEPC(k, score) * psfInfluenceWeights[k];
+                });
+            });
+            const modal = document.getElementById('psfManagementModal');
+            const canvas = document.getElementById('psfChartCanvas').parentNode;
+            const noMsg = document.getElementById('no-psf-chart-message');
+            if (count === 0) { canvas.style.display = 'none'; noMsg.style.display = 'block'; modal.style.display = 'flex'; return; }
+            canvas.style.display = 'block'; noMsg.style.display = 'none';
+            psfKeys.forEach(k => contrib[k] /= count);
+            const psfData = psfKeys.map(k => ({ name: psfNames[k], score: contrib[k] })).sort((a, b) => b.score - a.score);
+            const ctx = document.getElementById('psfChartCanvas').getContext('2d');
+            if (psfChartInstance) psfChartInstance.destroy();
+            const maxScore = Math.max(...psfData.map(d => d.score));
+            const bgColors = psfData.map(d => {
+                const ratio = maxScore > 0 ? d.score / maxScore : 0;
+                if (ratio >= 0.66) return 'rgba(217,48,37,0.7)';
+                if (ratio >= 0.33) return 'rgba(253,126,20,0.7)';
+                return 'rgba(40,167,69,0.7)';
+            });
+            psfChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: psfData.map(d => d.name), datasets: [{
+                        label: 'PSF 기여도', data: psfData.map(d => d.score),
+                        backgroundColor: bgColors, borderColor: bgColors.map(c => c.replace('0.7', '1')), borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: ctx => `기여도: ${(ctx.parsed.y * 100).toFixed(2)}%` } },
+                        customLabels: { formatter: v => (v * 100).toFixed(2) + '%', color: '#333', font: { weight: 'bold' } }
+                    },
+                    scales: { y: { beginAtZero: true, suggestedMax: Math.max(...psfData.map(d => d.score)) * 1.2 } }
+                },
+                plugins: [{
+                    id: 'customLabels', afterDatasetsDraw(chart, _, opt) {
+                        const { ctx } = chart;
+                        ctx.save();
+                        ctx.font = `${opt.font?.weight || 'normal'} ${opt.font?.size || 12}px sans-serif`;
+                        ctx.fillStyle = opt.color || '#000';
+                        ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+                        chart.data.datasets.forEach((ds, i) => {
+                            chart.getDatasetMeta(i).data.forEach((bar, j) => {
+                                const val = ds.data[j];
+                                ctx.fillText(opt.formatter ? opt.formatter(val) : val, bar.x, bar.y - 5);
+                            });
+                        });
+                        ctx.restore();
+                    }
+                }]
+            });
+            modal.style.display = 'flex';
+        }
+        function closePsfManagementModal() { document.getElementById('psfManagementModal').style.display = 'none'; }
 
-    function closeAllDropdowns(){
-        Array.from(document.getElementsByClassName("dropdown-content")).forEach(d=>d.classList.remove('show'));
-    }
-    document.getElementById('fileMenuBtn').addEventListener('click',e=>{
-        e.stopPropagation();
-        const dd=document.getElementById('fileMenuDropdown');
-        const shown=dd.classList.contains('show');
-        closeAllDropdowns();
-        if(!shown) dd.classList.add('show');
-    });
-    window.onclick=e=>{if(!e.target.matches('#fileMenuBtn')) closeAllDropdowns();};
-</script>
+        function saveAllDataAsCsv() {
+            const rows = document.getElementById('taskTable').querySelectorAll('tbody tr');
+            if (rows.length === 1 && rows[0].id === 'no-task-message') { alert("저장할 데이터가 없습니다."); return; }
+            const headers = ["연번", "작업명", "허용 시간", "작업 스트레스", "작업 복잡성", "경험·교육훈련",
+                "작업지시서·PTW", "작업환경·설비", "작업자 적합성", "작업관리 체계", "작업유형", "HEP", "성공 확률"];
+            const keys = ["name", "available_time", "stress", "complexity", "experience",
+                "procedures", "ergonomics", "fitness", "work_processes", "taskTypeLabel", "hep", "successProbability"];
+            let csv = headers.join(',') + '\n';
+            rows.forEach((row, i) => {
+                if (row.id === 'no-task-message') return;
+                const data = [(i + 1).toString()];
+                keys.forEach(k => {
+                    let v = row.dataset[k] || '';
+                    if (k === 'name') v = `"${v.replace(/"/g, '""')}"`;
+                    data.push(v);
+                });
+                csv += data.join(',') + '\n';
+            });
+            const now = new Date();
+            const ts = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}${String(now.getSeconds()).padStart(2, '0')}`;
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `HEP_BN_SPAR-H_${ts}.csv`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            alert(`저장 완료: HEP_BN_SPAR-H_${ts}.csv`);
+        }
+
+        function parseCsvLine(line) {
+            const result = []; let cur = '', inQ = false;
+            for (let i = 0; i < line.length; i++) {
+                const ch = line[i];
+                if (inQ) { if (ch === '"') { if (line[i + 1] === '"') { cur += '"'; i++; } else inQ = false; } else cur += ch; }
+                else { if (ch === '"') inQ = true; else if (ch === ',') { result.push(cur); cur = ''; } else cur += ch; }
+            }
+            result.push(cur); return result;
+        }
+
+        function loadDataFromCsv(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                const lines = e.target.result.split(/\r?\n/).filter(l => l.trim() !== '');
+                if (lines.length <= 1) { alert("불러올 데이터가 없습니다."); return; }
+                const header = lines[0].trim().replace(/^\uFEFF/, '');
+                const headerCols = header.split(',').length;
+                if (!header.startsWith("연번,작업명") || headerCols < 13) {
+                    alert("올바른 형식의 파일이 아닙니다.\n현재 버전의 '저장하기'로 저장한 파일을 선택해 주세요.\n(컬럼 수 불일치: " + headerCols + "개 감지)"); return;
+                }
+                const tbody = document.getElementById('taskTable').querySelector('tbody');
+                tbody.innerHTML = '';
+                let count = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim(); if (!line) continue;
+                    const v = parseCsvLine(line);
+                    const d = {
+                        name: v[1]?.trim() || '',
+                        available_time: v[2]?.trim() || '0', stress: v[3]?.trim() || '0',
+                        complexity: v[4]?.trim() || '0', experience: v[5]?.trim() || '0',
+                        procedures: v[6]?.trim() || '0', ergonomics: v[7]?.trim() || '0',
+                        fitness: v[8]?.trim() || '0', work_processes: v[9]?.trim() || '0',
+                        taskTypeLabel: v[10]?.trim() || '',
+                        taskType: v[10]?.trim().includes('진단') ? 'diagnosis' : v[10]?.trim().includes('수행') ? 'action' : 'mixed',
+                        taskTypeReason: v[10]?.trim().includes('진단') ? '진단 작업으로 불러옴 (CSV)'
+                            : v[10]?.trim().includes('수행') ? '수행 작업으로 불러옴 (CSV)'
+                                : '혼합 작업으로 불러옴 (CSV)',
+                        nhep: v[10]?.trim().includes('수행') ? '0.001' : '0.01',  // 추가
+                        hep: v[11]?.trim() || '0',
+                        successProbability: v[12]?.trim() || '0'
+                    };
+                    if (d.name) { addTaskToTable(d); count++; }
+                }
+                if (count > 0) alert(`${count}개 작업을 불러왔습니다.`);
+                else alert("불러올 수 있는 데이터가 없습니다.");
+            };
+            reader.readAsText(file, 'UTF-8');
+            event.target.value = '';
+        }
+
+        function closeAllDropdowns() {
+            Array.from(document.getElementsByClassName("dropdown-content")).forEach(d => d.classList.remove('show'));
+        }
+        document.getElementById('fileMenuBtn').addEventListener('click', e => {
+            e.stopPropagation();
+            const dd = document.getElementById('fileMenuDropdown');
+            const shown = dd.classList.contains('show');
+            closeAllDropdowns();
+            if (!shown) dd.classList.add('show');
+        });
+        window.onclick = e => { if (!e.target.matches('#fileMenuBtn')) closeAllDropdowns(); };
+    </script>
 </body>
+
 </html>
