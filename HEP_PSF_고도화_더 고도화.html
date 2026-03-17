@@ -1,0 +1,1429 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>휴먼에러 확률(HEP) 평가도구 (관리기능 추가)</title>
+    <!-- Chart.js 라이브러리 추가 -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* 기본 스타일 및 레이아웃 설정 (사용자 요청에 따라 기본 스타일만 사용) */
+        :root {
+            --primary-color: #005A9C; /* 전문적인 느낌의 파란색 */
+            --secondary-color: #E8F0F6;
+            --background-color: #F7F9FC;
+            --text-color: #333;
+            --border-color: #DDE3E9;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --danger-color: #D93025;
+            --edit-color: #1A73E8;
+            --success-color: #28a745;
+            --purple-color: #8A2BE2; /* 짙은 자주색 추가 */
+            --orange-color: #fd7e14; /* 주황색 추가 */
+            --engineering-color: #D93025; /* 공학적 개선안 - 붉은색 */
+            --management-color: #1A73E8; /* 관리적 개선안 - 파란색 */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--background-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px; /* 테이블 확장에 따른 너비 조정 */
+            background-color: #FFFFFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
+        }
+
+        header {
+            padding: 20px 30px;
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        main {
+            padding: 30px;
+        }
+        
+        .form-group {
+        margin-bottom: 20px;
+        }
+        .form-group label {
+        font-size: 18px;
+        font-weight: bold;   
+        color: #005A9C;
+        }
+
+
+        /* 버튼 스타일 */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        .btn-primary {
+            background-color: #FFFFFF;
+            color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #FFFFFF;
+        }
+        .btn-danger:hover {
+            opacity: 0.85;
+        }
+        .btn-edit {
+            background-color: var(--edit-color);
+            color: #FFFFFF;
+        }
+        .btn-edit:hover {
+            opacity: 0.85;
+        }
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        .btn-success:hover {
+            opacity: 0.85;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 테이블 및 관리 기능 스타일 */
+        .table-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center; /* 버튼 정렬 */
+            justify-content: flex-start; /* 버튼을 왼쪽으로 정렬 */
+            flex-wrap: wrap; /* 버튼이 많아지면 줄바꿈 */
+        }
+        .table-controls button {
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+        .table-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--secondary-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        /* 새롭게 추가된 테이블의 헤더 스타일 */
+        #preventionEffectTable th {
+            font-size: 1em;
+            padding: 8px 10px;
+        }
+        #preventionEffectTable td {
+            font-size: 1em;
+            padding: 8px 10px;
+        }
+        /* 예방효과 라디오 버튼을 수직으로 정렬하기 위한 스타일 */
+        .prevention-effect-vertical {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #FDFDFD;
+        }
+        
+        tbody tr.selected {
+            background-color: var(--secondary-color);
+        }
+
+        td.actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+        
+        /* 설문 모달 스타일 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none; /* 기본 숨김 */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: #FFFFFF;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px; /* 너비 확장 */
+            max-height: 90vh;
+            overflow-y: auto;
+            /* 이전 버전의 글씨 크기 수정 요청 반영 */
+            font-size: 1rem;
+        }
+        
+        #no-task-message {
+            text-align: center;
+            padding: 40px;
+            color: #777;
+        }
+        
+        /* -- 수정된 부분 시작 -- */
+        /* 작업명 입력란 크기 확대 */
+        #taskNameInput {
+            font-size: 1.0em; 
+            padding: 8px; /* 패딩 조정 */
+        }
+
+        /* 테이블 내용 폰트 크기 축소 */
+        .table-container td {
+            font-size: 70%;
+        }
+        .table-container td:not(:nth-child(2)) {
+            font-size: 90%;
+        }
+        /* 작업명, HEP, 성공확률은 굵고 크게 표시 */
+        .table-container td:nth-child(2),
+        .table-container td:nth-child(13),
+        .table-container td:nth-child(14) {
+            font-size: 100%;
+            font-weight: bold;
+        }
+        
+        /* 설문 문항 스타일 */
+        .question-group legend {
+            background-color: var(--primary-color);
+            color: #FFFFFF;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        /* -- 수정된 부분 끝 -- */
+        
+        /* ㅁ 아이콘 크기 키우기 */
+        .check-box {
+            font-size: 1.5rem; /* 기존 폰트 크기보다 크게 설정 */
+        }
+        /* 체크리스트 굵기 수정 */
+        #preventionList td {
+            font-weight: normal; /* 모든 텍스트의 굵기 초기화 */
+        }
+        #preventionList td strong {
+            font-weight: bold; /* strong 태그가 있는 부분만 굵게 */
+        }
+        
+        /* 모달 내 테이블 글씨 크기 조정 */
+        .modal-content table th, .modal-content table td {
+            font-size: 1rem;
+        }
+
+        /* PSF 항목의 폭을 줄이고 현재 점수의 폭을 늘림 */
+        #preventionEffectTable th:nth-child(1) { width: 15%; }
+        #preventionEffectTable th:nth-child(2) { width: 15%; }
+        #preventionEffectTable th:nth-child(3) { width: 50%; }
+        #preventionEffectTable th:nth-child(4) { width: 20%; }
+        #preventionEffectTable td:nth-child(1) { width: 15%; }
+        #preventionEffectTable td:nth-child(2) { width: 15%; }
+        #preventionEffectTable td:nth-child(3) { width: 50%; }
+        #preventionEffectTable td:nth-child(4) { width: 20%; }
+
+        /* 체크리스트 테이블 열 폭 조정 */
+        #preventionTable th:nth-child(1) { width: 12%; } /* 번호 폭 증가 */
+        #preventionTable th:nth-child(4) { width: 12%; } /* 실행여부 폭 감소 */
+        #preventionTable td:nth-child(1) { width: 12%; }
+        #preventionTable td:nth-child(4) { width: 12%; }
+
+        /* 작업명 표시 부분 색상 변경 */
+        .task-name-display {
+            color: var(--purple-color);
+            font-weight: bold;
+        }
+
+        /* 새로 추가된 스타일 */
+        .survey-modal-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .survey-modal-header h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #555;
+            margin: 0;
+        }
+        
+        .survey-card {
+            background-color: #F8F9FA;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .survey-card-question {
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .survey-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .survey-option-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+            border: 1px solid #ccc;
+        }
+
+        .survey-option-input {
+            display: none;
+        }
+
+        .survey-option-input:checked + .survey-option-label {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .modal-content .modal-actions {
+            justify-content: center;
+        }
+
+        .modal-content #submitBtn {
+            padding: 12px 30px;
+            font-size: 1.1em;
+        }
+
+        /* 관리 차트 모달 스타일 */
+        #managementStats div {
+            padding: 10px;
+            border-radius: 8px;
+            background-color: var(--secondary-color);
+            flex-basis: 23%; /* 4개의 항목이므로 */
+        }
+        #managementStats .stat-avg { color: var(--primary-color); }
+        #managementStats .stat-ucl { color: var(--danger-color); }
+        #managementStats .stat-lcl { color: var(--success-color); }
+
+        /* [요청사항] 드롭다운 메뉴 스타일 */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 180px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1001; /* 다른 모달보다 위에 오도록 z-index 조정 */
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .dropdown-content a {
+            color: var(--text-color);
+            padding: 8px 16px;
+            text-decoration: none;
+            display: block;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .dropdown-content a:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .show {
+            display: block;
+        }
+        
+        #fileMenuBtn {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            font-size: 1.2em;
+            font-weight: bold;
+            line-height: 1;
+            padding: 6px 10px;
+        }
+        #fileMenuBtn:hover {
+            background-color: var(--secondary-color);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>휴먼에러 확률(HEP) 평가 (관리기능 추가)</h1>
+    </header>
+    <main>
+        <div class="table-controls">
+            <button id="addTaskBtn" class="btn btn-primary" onclick="openSurveyModal()" style="background:#0b3d91;color:#fff">작업 추가</button>
+            <button id="moveUpBtn" class="btn btn-small" onclick="moveRow('up')" disabled>위로 ▲</button>
+            <button id="moveDownBtn" class="btn btn-small" onclick="moveRow('down')" disabled>아래로 ▼</button>
+            <button id="preventionEffectBtn" class="btn btn-primary" onclick="openPreventionEffectModal()" style="background-color: var(--success-color); color: white;" disabled>휴먼에러 예방효과 및 목표설정</button>
+            <button id="managePsfBtn" class="btn btn-primary" onclick="openPsfManagementModal()" style="background-color: var(--orange-color); color: white;" disabled>선택작업 PSF 관리</button>
+            <button id="manageSelectedTasksBtn" class="btn btn-primary" onclick="openHepManagementModal()" style="background-color: var(--purple-color); color: white;" disabled>선택 작업관리</button>
+            
+            <!-- [요청사항] 파일 메뉴 버튼 그룹 (드롭다운으로 변경) -->
+            <div class="dropdown" style="margin-left: auto;">
+                <button id="fileMenuBtn" class="btn btn-small">&#8942;</button> <!-- 세로 점 3개 아이콘 -->
+                <div id="fileMenuDropdown" class="dropdown-content">
+                    <a href="HEP_PSF_Manual.pdf" target="_blank" onclick="closeAllDropdowns();">▷ 사용자 매뉴얼</a>
+                    <a href="#" onclick="document.getElementById('csvFileInput').click(); closeAllDropdowns(); return false;">▷ 불러오기</a>
+                    <a href="#" onclick="saveAllDataAsCsv(); closeAllDropdowns(); return false;">▷ 저장하기</a>
+                    <a href="#" onclick="saveTableAsCsv(); closeAllDropdowns(); return false;">▷ 저장하기(THERP용)</a>
+                </div>
+            </div>
+        </div>
+        <div class="table-container">
+            <table id="taskTable">
+                <thead>
+                    <tr>
+                        <th>선택</th>
+                        <th>작업명</th>
+                        <th>가능성</th>
+                        <th>중대성</th>
+                        <th>난이도</th>
+                        <th>환경</th>
+                        <th>집중도</th>
+                        <th>절차</th>
+                        <th>시간압박</th>
+                        <th>경험</th>
+                        <th>팀워크</th>
+                        <th>작업자 상태</th>
+                        <th>HEP</th>
+                        <th>성공 확률</th>
+                        <th>관리</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr id="no-task-message">
+                        <td colspan="15">아직 평가된 작업이 없습니다.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- [요청사항] CSV 파일 불러오기를 위한 숨겨진 input -->
+        <input type="file" id="csvFileInput" accept=".csv" style="display: none;"/>
+    </main>
+</div>
+
+<!-- 설문조사 모달 -->
+<div class="modal-overlay" id="surveyModal">
+    <div class="modal-content">
+        <h1 align="center" id="modalTitle">휴먼에러 요인분석 설문지</h1>
+        <form id="hepSurveyForm" onsubmit="submitSurvey(event)">
+            <input type="hidden" id="editingRowId">
+            <div class="form-group">
+                <label for="taskNameInput">▶ 평가할 대상 작업명 : </label>
+                <input type="text" id="taskNameInput" placeholder="예: 밸브 잠금 작업" required>
+            </div>
+            <p></p>
+            <div id="surveyQuestions"></div>
+            <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" class="btn" onclick="closeSurveyModal()">취소</button>
+                <button type="submit" id="submitBtn" class="btn btn-primary" style="background-color: var(--primary-color); color: #fff;" disabled>추가하기</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 휴먼에러 예방 체크리스트 모달 -->
+<div class="modal-overlay" id="preventionModal">
+    <div class="modal-content">
+        <h2 id="preventionModalTitle" style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+            <span class="task-name-display"></span> 휴먼에러 예방 체크리스트
+        </h2>
+        <div class="table-container">
+            <table id="preventionTable">
+                <thead>
+                    <tr>
+                        <th style="width: 12%;">번호</th>
+                        <th style="width: 50%;">체크리스트</th>
+                        <th style="width: 24%;">휴먼에러 예방효과*</th>
+                        <th style="width: 14%;">실행 여부</th>
+                    </tr>
+                </thead>
+                <tbody id="preventionList">
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: right; margin-top: 15px; padding-right: 5px;">
+            <p style="font-size: 0.85em; color: #666; margin: 0;">*예방효과: 다른 항목이 개선되지 않고, 해당 항목만 개선되었을 경우에 얻게되는 효과</p>
+        </div>
+        <p style="text-align: center;"> 본 자료는 산업안전보건교육원 교육용으로 개발한 것입니다.</p>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-primary" onclick="printChecklist()" style="background-color: #555; color: white;">체크리스트 인쇄하기</button>
+            <button type="button" class="btn" onclick="closePreventionModal()">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 휴먼에러 예방효과 및 목표설정 모달 -->
+<div class="modal-overlay" id="preventionEffectModal">
+    <div class="modal-content">
+        <h2 id="preventionEffectModalTitle" style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+            <span class="task-name-display"></span> 휴먼에러 예방효과 및 목표설정
+        </h2>
+        <div class="table-container">
+            <table id="preventionEffectTable">
+                <thead>
+                    <tr>
+                        <th style="width: 15%;">PSF 항목</th>
+                        <th style="width: 15%;">현재 점수</th>
+                        <th style="width: 50%;">목표점수에 따른 예방효과(HEP)</th>
+                        <th style="width: 20%;">목표설정</th>
+                    </tr>
+                </thead>
+                <tbody id="preventionEffectList">
+                </tbody>
+            </table>
+        </div>
+        <div style="text-align: left; margin-top: 15px; padding-left: 5px; font-size: 0.85em; color: #666; line-height: 1.5;">
+            <p>
+                ※ 목표설정 시, 현재점수와 차이가 크면 <span style="font-weight: bold; color: var(--engineering-color);">공학적 개선안</span>을 제안하고, 차이가 작으면 <span style="font-weight: bold; color: var(--management-color);">관리적 개선안</span>을 제안하고 있습니다.
+            </p>
+        </div>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button id="preventionBtn" class="btn" onclick="generateAndOpenPreventionChecklist()" disabled style="background:#0b3d91;color:#fff">휴먼에러 예방 체크리스트 생성</button>
+            <button type="button" class="btn" onclick="closePreventionEffectModal()">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 선택 작업관리 모달 -->
+<div class="modal-overlay" id="hepManagementModal">
+    <div class="modal-content" style="max-width: 1000px;">
+        <h2 id="managementModalTitle" style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+            선택 작업 HEP 관리 차트
+        </h2>
+        <div id="managementStats" style="display: flex; justify-content: space-around; margin-bottom: 20px; font-weight: bold; text-align: center;">
+            <!-- 통계 데이터가 여기에 표시됩니다. -->
+        </div>
+        <!-- 차트 구현을 위해 Canvas로 변경 -->
+        <div style="position: relative; height:40vh; width:100%">
+            <canvas id="hepChartCanvas"></canvas>
+        </div>
+        <div id="no-chart-message" style="display: none; text-align: center; padding: 40px; color: #777;">
+            분석할 작업을 선택해주세요.
+        </div>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn" onclick="closeHepManagementModal()">닫기</button>
+        </div>
+    </div>
+</div>
+
+<!-- 선택작업 PSF 관리 모달 -->
+<div class="modal-overlay" id="psfManagementModal">
+    <div class="modal-content" style="max-width: 1000px;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 20px;">
+            선택 작업 PSF 요인 분석
+        </h2>
+        <!-- 차트 구현을 위해 Canvas로 변경 -->
+        <div style="position: relative; height:40vh; width:100%">
+            <canvas id="psfChartCanvas"></canvas>
+        </div>
+        <div id="no-psf-chart-message" style="display: none; text-align: center; padding: 40px; color: #777;">
+            분석할 작업을 선택해주세요.
+        </div>
+        <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn" onclick="closePsfManagementModal()">닫기</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    // 전역 변수 및 데이터 (변경 없음)
+    const surveyData = {
+        likelihood: { question: "1. 이 작업에서 사고가 발생할 가능성(빈도)은 얼마나 됩니까?", options: ["매우 낮음", "낮음", "보통", "높음", "매우 높음"] },
+        severity: { question: "2. 이 작업에서 사고가 발생한다면, 인적/물적 피해는 얼마나 심각합니까?", options: ["경미함", "주의 필요", "심각함", "치명적", "재앙적"] },
+        difficulty: { question: "3. 이 작업을 수행하는데 얼마나 어렵습니까?", options: ["매우 쉬움", "쉬움", "보통", "어려움", "매우 어려움"] },
+        environment: { question: "4. 이 작업 주변 환경(소음, 조명, 공간 등)은 얼마나 불편합니까?", options: ["매우 쾌적함", "쾌적함", "보통", "불편함", "매우 불편함"] },
+        attention: { question: "5. 이 작업을 수행하는 데 집중력은 얼마나 요구합니까?", options: ["거의 불필요", "조금 필요", "보통", "높은 집중", "최고 수준"] },
+        procedure: { question: "6. 이 작업의 절차나 지침을 이해하는데 얼마나 어렵습니까?", options: ["매우 명확함", "명확함", "보통", "불명확함", "매우 불명확함"] },
+        timePressure: { question: "7. 주어진 시간 안에 이 작업을 완료해야 한다는 압박감을 얼마나 느끼십니까?", options: ["전혀 없음", "조금 느낌", "보통", "많이 느낌", "매우 많이 느낌"] },
+        experience: { question: "8. 이 작업을 수행하는데 유사한 작업에 대한 경험이 얼마나 필요합니까?", options: ["거의 불필요", "조금 필요", "보통", "많이 필요", "매우 많이 필요"] },
+        teamwork: { question: "9. 이 작업을 수행하는데 팀원 간의 협력이나 의사소통은 얼마나 필요합니까?", options: ["전혀 불필요", "약간 필요", "보통", "중요함", "필수적임"] },
+        condition: { question: "10. 작업자의 피로, 스트레스 등 심리적/신체적 상태가 이 작업을 수행하는데 얼마나 영향을 미칩니까?", options: ["영향 없음", "약간 영향", "보통", "상당한 영향", "결정적 영향"] }
+    };
+    const hepWeights = { difficulty: [0.001, 0.1], environment: [0.001, 0.15], attention: [0.001, 0.1], procedure: [0.001, 0.2], timePressure: [0.001, 0.18], experience: [0.001, 0.2], teamwork: [0.001, 0.17], condition: [0.001, 0.22] };
+    const psfInfluenceWeights = { difficulty: 1.0, environment: 0.8, attention: 1.0, procedure: 1.2, timePressure: 1.1, experience: 1.2, teamwork: 1.1, condition: 1.2 };
+    const riskMultipliers = { likelihood: [0.8, 1.0, 1.2, 1.5, 2.0], severity: [0.8, 1.0, 1.5, 2.5, 3.5] };
+    const preventionData = {
+        difficulty: {
+            2: [
+                "<strong>(난이도)</strong> 작업 단계를 더 세분화하고, 복잡한 부분에 대한 체크리스트를 별도로 작성하여 활용하십시오.",
+                "<strong>(난이도)</strong> 복잡한 작업의 흐름을 시각화(Visual Management)하여 한눈에 파악할 수 있도록 게시하십시오."
+            ],
+            3: [
+                "<strong>(난이도)</strong> 작업 중 발생할 수 있는 잠재적 위험 요소를 식별하고, 비상 상황 대비 훈련을 계획하십시오.",
+                "<strong>(난이도)</strong> 예상치 못한 상황에 대비하여 복잡한 작업 과정을 시뮬레이션하고, 팀원 간 역할을 명확히 하십시오."
+            ],
+            4: [
+                "<strong>(난이도)</strong> 작업 단계를 더 세분화하고, 복잡한 부분에 대한 체크리스트를 별도로 작성하여 활용하십시오.",
+                "<strong>(난이도)</strong> 복잡한 작업의 흐름을 시각화(Visual Management)하여 한눈에 파악할 수 있도록 게시하십시오."
+            ],
+            5: [
+                "<strong>(난이도)</strong> 작업을 자동화하거나, 보조 장치(Jig)를 도입하여 작업자의 인지적 부하를 최소화하십시오.",
+                "<strong>(난이도)</strong> 작업의 핵심 절차를 간소화하거나, 다른 작업으로 분할하여 한 번에 처리하는 정보량을 줄이십시오."
+            ]
+        },
+        environment: {
+            2: [
+                "<strong>(환경)</strong> 불필요한 소음을 제거하고 조명을 개선하는 등 물리적 환경을 개선하여 작업자의 집중도를 향상시키십시오.",
+                "<strong>(환경)</strong> 작업자의 심리적 안정감을 위해 작업 공간의 색채, 배치 등을 재조정하여 쾌적한 환경을 조성하십시오."
+            ],
+            3: [
+                "<strong>(환경)</strong> 작업 환경의 변동 요인을 파악하고, 작업자가 인지할 수 있는 시각적 신호(표지판, 알림 등)를 설치하십시오.",
+                "<strong>(환경)</strong> 작업 효율을 저해하는 불필요한 물품이나 장애물을 제거하고, 정리정돈 상태를 정기적으로 점검하십시오."
+            ],
+            4: [
+                "<strong>(환경)</strong> 불필요한 소음을 제거하고 조명을 개선하고 등 물리적 환경을 개선하여 작업자의 집중도를 향상시키십시오.",
+                "<strong>(환경)</strong> 작업자의 심리적 안정감을 위해 작업 공간의 색채, 배치 등을 재조정하여 쾌적한 환경을 조성하십시오."
+            ],
+            5: [
+                "<strong>(환경)</strong> 위험 요소가 있는 작업 환경에 대해 원격 모니터링 시스템을 구축하고, 개인 보호 장비(PPE) 착용을 의무화하십시오.",
+                "<strong>(환경)</strong> 작업 장소에 유해 물질이나 위험 요소가 있다면, 즉시 제거하거나 접근을 차단하는 통제 구역을 설정하십시오."
+            ]
+        },
+        attention: {
+            2: [
+                "<strong>(집중도)</strong> 명확한 경고 표지나 알림 시스템을 도입하여 작업자의 주의를 환기시키고 실수를 예방하십시오.",
+                "<strong>(집중도)</strong> 실수 유발 가능성이 높은 지점(Error-Prone Area)에 시각적/청각적 경고 장치를 설치하여 작업자의 주의를 끌도록 하십시오."
+            ],
+            3: [
+                "<strong>(집중도)</strong> 중요한 작업 단계에서는 'Stop and Think'와 같이 작업자가 잠시 멈춰서 다음 단계를 확인하는 습관을 들이십시오.",
+                "<strong>(집중도)</strong> 업무 시작 전 5분간 '안전 TBM(Tool Box Meeting)'을 통해 오늘 작업의 중요 포인트를 상기시키고 집중도를 높이십시오."
+            ],
+            4: [
+                "<strong>(집중도)</strong> 명확한 경고 표지나 알림 시스템을 도입하여 작업자의 주의를 환기시키고 실수를 예방하십시오.",
+                "<strong>(집중도)</strong> 실수 유발 가능성이 높은 지점(Error-Prone Area)에 시각적/청각적 경고 장치를 설치하여 작업자의 주의를 끌도록 하십시오."
+            ],
+            5: [
+                "<strong>(집중도)</strong> 높은 집중이 필요한 작업은 2인 1조로 수행하고, 상호 확인(Cross-Check) 절차를 의무화하십시오.",
+                "<strong>(집중도)</strong> 작업 중 발생할 수 있는 인지적 부하를 줄이기 위해 작업 순서에 따라 도구와 재료를 미리 배치하는 등 '포카요케(Poka-Yoke)'를 적용하십시오."
+            ]
+        },
+        procedure: {
+            2: [
+                "<strong>(절차)</strong> 복잡하거나 중요한 절차를 그림, 도표, 혹은 동영상으로 제작하여 직관적인 이해를 돕도록 하십시오.",
+                "<strong>(절차)</strong> 작업자가 현장에서 실시간으로 절차서를 확인할 수 있도록 QR 코드 등 디지털 접근 수단을 제공하십시오."
+            ],
+            3: [
+                "<strong>(절차)</strong> 작업 절차에 대한 정기적인 훈련과 평가를 실시하여 절차에 대한 이해도를 높이십시오.",
+                "<strong>(절차)</strong> 작업 절차서에 자주 발생하는 실수의 유형과 예방 조치를 구체적으로 명시하여 작업자가 숙지하도록 하십시오."
+            ],
+            4: [
+                "<strong>(절차)</strong> 복잡하거나 중요한 절차를 그림, 도표, 혹은 동영상으로 제작하여 직관적인 이해를 돕도록 하십시오.",
+                "<strong>(절차)</strong> 작업자가 현장에서 실시간으로 절차서를 확인할 수 있도록 QR 코드 등 디지털 접근 수단을 제공하십시오."
+            ],
+            5: [
+                "<strong>(절차)</strong> 작업 절차의 각 단계마다 완료를 확인하는 체크리스트를 포함하고, 서명 절차를 추가하여 책임감을 부여하십시오.",
+                "<strong>(절차)</strong> 핵심 작업에 대해서는 절차의 중요성과 오류 발생 시의 파급 효과를 강조하는 별도의 교육 프로그램을 개발하여 운영하십시오."
+            ]
+        },
+        timePressure: {
+            2: [
+                "<strong>(시간압박)</strong> 작업의 우선순위를 명확히 설정하고, 중요하지 않은 작업은 과감하게 연기하거나 위임하도록 하십시오.",
+                "<strong>(시간압박)</strong> 시간 압박이 심한 작업은 작업 인원을 증원하거나, 작업을 재분배하여 부담을 완화하도록 하십시오."
+            ],
+            3: ["<strong>(시간압박)</strong> 작업자가 작업량과 시간 압박에 대해 관리자와 소통할 수 있는 채널을 마련하고, 주기적으로 검토하십시오.","<strong>(시간압박)</strong> 예정된 작업과 실제 작업 시간을 비교하고, 지연이 발생하는 원인을 분석하여 개선책을 마련하십시오."],
+            4: ["<strong>(시간압박)</strong> 작업의 우선순위를 명확히 설정하고, 중요하지 않은 작업은 과감하게 연기하거나 위임하도록 하십시오.","<strong>(시간압박)</strong> 시간 압박이 심한 작업은 작업 인원을 증원하거나, 작업을 재분배하여 부담을 완화하도록 하십시오."],
+            5: ["<strong>(시간압박)</strong> 인력이나 자원이 부족한 경우 즉시 추가 지원을 요청하고, 작업량을 분산하여 압박감을 줄이십시오.","<strong>(시간압박)</strong> 작업 시간 관리를 위한 시스템을 도입하여 작업자가 자신의 진행 상황을 실시간으로 확인하고, 스스로 속도를 조절할 수 있도록 유도하십시오."]
+        },
+        experience: {
+            2: ["<strong>(경험)</strong> 경험이 부족한 작업자는 숙련된 멘토와 함께 작업하도록 하여 실수를 줄이고 기술을 습득하도록 하십시오.","<strong>(경험)</strong> 팀 내에서 '베테랑'과 '신입'이 짝을 이루는 버디 시스템을 공식적으로 운영하여 지식 전수를 활성화하십시오."],
+            3: ["<strong>(경험)</strong> 다양한 작업 경험을 쌓을 수 있도록 순환 근무(Job Rotation) 제도를 도입하십시오.","<strong>(경험)</strong> 작업자가 유사한 작업 경험을 통해 기술을 확장할 수 있도록 교육 프로그램을 구성하고, 정기적으로 평가하십시오."],
+            4: ["<strong>(경험)</strong> 경험이 부족한 작업자는 숙련된 멘토와 함께 작업하도록 하여 실수를 줄이고 기술을 습득하도록 하십시오.","<strong>(경험)</strong> 팀 내에서 '베테랑'과 '신입'이 짝을 이루는 버디 시스템을 공식적으로 운영하여 지식 전수를 활성화하십시오."],
+            5: ["<strong>(경험)</strong> 작업자의 경험과 숙련도에 따라 작업 배정을 차등화하고, 충분한 훈련 없이는 복잡한 작업을 맡기지 않도록 하십시오.","<strong>(경험)</strong> 작업자별 역량 평가(Skill Matrix)를 작성하고, 부족한 기술에 대해 맞춤형 훈련을 제공하는 체계를 구축하십시오."]
+        },
+        teamwork: {
+            2: ["<strong>(팀워크)</strong> 작업 전 TBM(Tool Box Meeting)을 통해 각자의 역할을 명확히 하고 예상 문제점을 공유하는 문화를 만드십시오.","<strong>(팀워크)</strong> 명확하고 간결한 의사소통 기법(예: 3-Way Communication)을 훈련하고 생활화하십시오."],
+            3: ["<strong>(팀워크)</strong> 다른 팀원이 수행하는 작업을 상호 확인(Cross-Check)하는 절차를 도입하여 실수를 조기에 발견하도록 하십시오.","<strong>(팀워크)</strong> 정기적으로 팀워크 강화 훈련이나 워크숍을 실시하여 신뢰와 협력 관계를 구축하십시오."],
+            4: ["<strong>(팀워크)</strong> 작업 중 의사소통 오류를 줄이기 위해 표준화된 용어와 신호 체계를 수립하여 사용하십시오.","<strong>(팀워크)</strong> 갈등 상황 발생 시 이를 건설적으로 해결할 수 있는 절차를 마련하고 관련 교육을 실시하십시오."],
+            5: ["<strong>(팀워크)</strong> 중요한 의사결정이나 작업은 반드시 2인 이상이 함께 검토하고 실행하도록 시스템화하십시오.","<strong>(팀워크)</strong> 작업 중 누구든지 잠재적 위험을 발견하면 즉시 작업을 중단시킬 수 있는 'Stop Work' 권한을 부여하고, 이를 존중하는 문화를 조성하십시오."]
+        },
+        condition: {
+            2: ["<strong>(작업자 상태)</strong> 작업 중간에 적절한 휴식 시간을 보장하여 피로가 누적되지 않도록 관리하십시오.","<strong>(작업자 상태)</strong> 작업자가 스트레스나 심리적 어려움을 겪을 때 상담을 받을 수 있는 지원 프로그램을 마련하십시오."],
+            3: ["<strong>(작업자 상태)</strong> 작업 시작 전, 동료끼리 서로의 안색이나 상태를 확인하고 배려하는 '동료체크(Peer Check)' 문화를 도입하십시오.","<strong>(작업자 상태)</strong> 근무 교대 시 피로가 누적된 상태로 근무에 투입되지 않도록 최대 근무 시간 규정을 준수하십시오."],
+            4: ["<strong>(작업자 상태)</strong> 작업 강도나 근무 일정을 개인의 신체적, 심리적 상태를 고려하여 유연하게 조정할 수 있는 제도를 검토하십시오.","<strong>(작업자 상태)</strong> 피로나 스트레스가 높은 작업에 대해서는 작업 순환(Job Rotation)을 통해 부담을 분산시키십시오."],
+            5: ["<strong>(작업자 상태)</strong> 작업자가 스스로 자신의 피로도를 체크할 수 있는 자가진단 체크리스트를 활용하고, 일정 수준 이상일 경우 관리자에게 보고하도록 의무화하십시오.","<strong>(작업자 상태)</strong> 음주나 약물 복용 후에는 절대로 작업에 투입되지 않도록 엄격한 규정을 수립하고, 불시 점검을 실시하십시오."]
+        }
+    };
+    const psfNames = { difficulty: "난이도", environment: "환경", attention: "집중도", procedure: "절차", timePressure: "시간압박", experience: "경험", teamwork: "팀워크", condition: "작업자 상태" };
+
+    // Chart.js 인스턴스를 관리하기 위한 전역 변수
+    let hepChartInstance = null;
+    let psfChartInstance = null;
+
+    // HEP 계산 및 기본 UI 함수 (변경 없음)
+    function scaleEPC(value, minHEP, maxHEP) { const ratio = (value - 1) / 4; return minHEP + ratio * (maxHEP - minHEP); }
+    function calculateHEP(scores) {
+        const psfKeys = Object.keys(hepWeights); let weightedHepSum = 0; let weightSum = 0;
+        for (const key of psfKeys) { const score = scores[key]; const influenceWeight = psfInfluenceWeights[key]; const scaledValue = scaleEPC(score, hepWeights[key][0], hepWeights[key][1]); weightedHepSum += scaledValue * influenceWeight; weightSum += influenceWeight; }
+        const baseHEP = weightedHepSum / weightSum;
+        const finalHEP = Math.min(Math.max(baseHEP * riskMultipliers.likelihood[scores.likelihood - 1] * riskMultipliers.severity[scores.severity - 1], 0.001), 1.0);
+        return finalHEP;
+    }
+    function generateSurveyQuestions() {
+        const questionsContainer = document.getElementById('surveyQuestions'); let html = ''; const keys = Object.keys(surveyData);
+        html += `<div class="survey-modal-header"><p>각 질문에 대해 1~5점 척도로 평가해 주세요.</p><p style="font-size: 0.85em; color: #666; margin-top: 5px;">※1점 : <span style="font-weight: bold; color: green;">가장 약한/좋은/편한/쉬운/적은</span> 경우, 5점 : <span style="font-weight: bold; color: red;">가장 강한/나쁜/힘든/어려운/많은</span> 경우</p></div>`;
+        keys.forEach(key => { const item = surveyData[key]; html += `<div class="survey-card"><div class="survey-card-question">${item.question}</div><div class="survey-options">`; for (let i = 1; i <= 5; i++) { html += `<input type="radio" id="${key}-${i}" name="${key}" value="${i}" class="survey-option-input" onchange="checkSurveyCompletion()"><label for="${key}-${i}" class="survey-option-label">${i}</label>`; } html += `</div></div>`; });
+        questionsContainer.innerHTML = html;
+        document.querySelectorAll('.survey-option-input').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const name = e.target.name; document.querySelectorAll(`input[name="${name}"]`).forEach(r => { r.nextElementSibling.style.backgroundColor = ''; r.nextElementSibling.style.color = ''; r.nextElementSibling.style.borderColor = '#ccc'; });
+                if(e.target.checked) { const label = e.target.nextElementSibling; label.style.backgroundColor = 'var(--primary-color)'; label.style.color = 'white'; label.style.borderColor = 'var(--primary-color)'; }
+            });
+        });
+    }
+    function checkSurveyCompletion() { const form = document.getElementById('hepSurveyForm'); const questions = Object.keys(surveyData); let allAnswered = true; questions.forEach(key => { if (!form.querySelector(`input[name="${key}"]:checked`)) { allAnswered = false; } }); document.getElementById('submitBtn').disabled = !allAnswered; }
+    
+    // --- 여기부터 수정된 부분 ---
+    function submitSurvey(event) {
+        event.preventDefault();
+        const editingRowId = document.getElementById('editingRowId').value;
+        const taskName = document.getElementById('taskNameInput').value.trim();
+
+        // --- 요청된 기능 추가: 작업명 중복 확인 ---
+        const rows = document.querySelectorAll('#taskTable tbody tr');
+        let isDuplicate = false;
+        // 테이블에 작업이 있을 경우에만 중복 검사 실행
+        if (rows.length > 0 && rows[0].id !== 'no-task-message') {
+            for (const row of rows) {
+                // 수정 모드일 때는 현재 수정 중인 행을 비교에서 제외
+                if (editingRowId && row.id === editingRowId) {
+                    continue;
+                }
+                // 기존 작업명과 새 작업명을 비교 (양쪽 공백 제거 후)
+                if (row.dataset.name && row.dataset.name.trim() === taskName) {
+                    isDuplicate = true;
+                    break;
+                }
+            }
+        }
+
+        if (isDuplicate) {
+            alert('이미 존재하는 작업명입니다. 다른 이름을 사용해 주세요.');
+            return; // 중복이므로 함수 실행 중단
+        }
+        // --- 기능 추가 끝 ---
+
+        const formData = new FormData(event.target);
+        const values = { name: taskName };
+        const keys = Object.keys(surveyData);
+        for (const key of keys) {
+            const value = formData.get(key);
+            if (!value) { return; } // 모든 항목이 선택되었는지 확인
+            values[key] = parseInt(value);
+        }
+        const originalHEP = calculateHEP(values);
+        values.hep = originalHEP.toFixed(4);
+        values.successProbability = (1.0 - originalHEP).toFixed(4);
+        if (editingRowId) {
+            updateTaskInTable(document.getElementById(editingRowId), values);
+        } else {
+            addTaskToTable(values);
+        }
+        closeSurveyModal();
+    }
+    // --- 여기까지 수정된 부분 ---
+
+    function addTaskToTable(taskData) {
+        const tableBody = document.getElementById('taskTable').querySelector('tbody');
+        const noTaskMessage = document.getElementById('no-task-message');
+        if (noTaskMessage) noTaskMessage.remove();
+        const newRow = tableBody.insertRow();
+        // [수정된 부분] Date.now() 대신 crypto.randomUUID()를 사용하여 고유 ID를 생성합니다.
+        newRow.id = `task-${crypto.randomUUID()}`;
+        updateTaskInTable(newRow, taskData);
+    }
+    function updateTaskInTable(row, taskData) {
+        for (const key in taskData) { row.dataset[key] = taskData[key]; }
+        const getTextOption = (key, value) => surveyData[key] ? surveyData[key].options[value - 1] : value;
+        row.innerHTML = `<td><input type="checkbox" name="task_select" onchange="handleCheckboxChange()"></td><td>${taskData.name}</td><td>${getTextOption('likelihood', taskData.likelihood)}</td> <td>${getTextOption('severity', taskData.severity)}</td><td>${getTextOption('difficulty', taskData.difficulty)}</td> <td>${getTextOption('environment', taskData.environment)}</td><td>${getTextOption('attention', taskData.attention)}</td> <td>${getTextOption('procedure', taskData.procedure)}</td><td>${getTextOption('timePressure', taskData.timePressure)}</td> <td>${getTextOption('experience', taskData.experience)}</td><td>${getTextOption('teamwork', taskData.teamwork)}</td> <td>${getTextOption('condition', taskData.condition)}</td><td><strong>${taskData.hep}</strong></td> <td><strong>${taskData.successProbability}</strong></td><td class="actions"><button class="btn btn-small btn-edit" onclick="editTask(this)">수정</button><button class="btn btn-small btn-danger" onclick="deleteTask(this)">삭제</button></td>`;
+    }
+    function editTask(button) { openSurveyModal(button.closest('tr')); }
+    function deleteTask(button) { const row = button.closest('tr'); const tableBody = row.parentNode; row.remove(); if (tableBody.rows.length === 0) { tableBody.innerHTML = `<tr id="no-task-message"><td colspan="15">아직 평가된 작업이 없습니다.</td></tr>`; } updateMoveButtonsState(); }
+    function openSurveyModal(row = null) {
+        const form = document.getElementById('hepSurveyForm'); form.reset(); document.getElementById('editingRowId').value = ''; document.querySelectorAll('.survey-option-label').forEach(label => { label.style.backgroundColor = ''; label.style.color = ''; label.style.borderColor = '#ccc'; });
+        if (row) { document.getElementById('modalTitle').textContent = '작업 평가 수정'; document.getElementById('submitBtn').textContent = '수정 완료'; document.getElementById('editingRowId').value = row.id; document.getElementById('taskNameInput').value = row.dataset.name; for (const key in surveyData) { const value = row.dataset[key]; if (value) { const radio = form.querySelector(`input[name="${key}"][value="${value}"]`); if (radio) { radio.checked = true; radio.dispatchEvent(new Event('change')); } } } } else { document.getElementById('modalTitle').textContent = '휴먼에러 요인분석 설문지'; document.getElementById('submitBtn').textContent = '추가하기'; }
+        document.getElementById('surveyModal').style.display = 'flex';
+        document.querySelector('#surveyModal .modal-content').scrollTop = 0;
+        checkSurveyCompletion();
+    }
+    function closeSurveyModal() { document.getElementById('surveyModal').style.display = 'none'; }
+    function generateAndOpenPreventionChecklist() {
+        const checkedBox = document.querySelector('input[name="task_select"]:checked'); if (!checkedBox) { return; } const preventionList = document.getElementById('preventionList'); preventionList.innerHTML = ''; const row = checkedBox.closest('tr'); const taskData = row.dataset; const originalHEP = parseFloat(taskData.hep); document.querySelector('#preventionModalTitle .task-name-display').textContent = `[${taskData.name}]`; const psfKeys = Object.keys(hepWeights); let counter = 1;
+        for (const key of psfKeys) {
+            const selectedTargetScore = document.querySelector(`input[name="${key}-target"]:checked`)?.value;
+            if (selectedTargetScore) {
+                const targetScore = parseInt(selectedTargetScore); const currentScore = parseInt(taskData[key]);
+                if (targetScore < currentScore) {
+                    const tempScores = { ...taskData }; for (const k in tempScores) { if (!isNaN(parseInt(tempScores[k]))) { tempScores[k] = parseInt(tempScores[k]); } } tempScores[key] = targetScore; const newFinalHEP = calculateHEP(tempScores); const preventionEffect = originalHEP - newFinalHEP; let suggestions = []; const scoreDifference = currentScore - targetScore;
+                    if (scoreDifference === 4 && preventionData[key] && preventionData[key][5]) { suggestions = preventionData[key][5]; } else if (scoreDifference === 3 && preventionData[key] && preventionData[key][4]) { suggestions = preventionData[key][4]; } else if (scoreDifference === 2 && preventionData[key] && preventionData[key][3]) { suggestions = preventionData[key][3]; } else if (scoreDifference === 1 && preventionData[key] && preventionData[key][2]) { suggestions = preventionData[key][2]; }
+                    if (suggestions && suggestions.length > 0) { const selectedSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)]; const newRow = preventionList.insertRow(); newRow.insertCell(0).textContent = counter; newRow.insertCell(1).innerHTML = selectedSuggestion; const effectCell = newRow.insertCell(2); effectCell.textContent = `${preventionEffect.toFixed(4)} 감소(↓)`; effectCell.style.color = 'var(--primary-color)'; effectCell.style.fontWeight = 'bold'; newRow.insertCell(3).innerHTML = '<span class="check-box">□</span>'; newRow.cells[1].style.textAlign = 'left'; [newRow.cells[0], newRow.cells[2], newRow.cells[3]].forEach(cell => cell.style.textAlign = 'center'); counter++; }
+                }
+            }
+        }
+        if (counter === 1) { const newRow = preventionList.insertRow(); const cell = newRow.insertCell(0); cell.colSpan = 4; cell.textContent = "목표를 설정한 PSF 항목이 없거나, 현재 점수가 낮아 개선 권장사항이 없습니다."; cell.style.textAlign = 'center'; }
+        closePreventionEffectModal(); 
+        document.getElementById('preventionModal').style.display = 'flex';
+    }
+    function closePreventionModal() { 
+        document.getElementById('preventionModal').style.display = 'none'; 
+        openPreventionEffectModal(); 
+    }
+    function openPreventionEffectModal() {
+        const checkedBox = document.querySelector('input[name="task_select"]:checked'); if (!checkedBox) { return; } const row = checkedBox.closest('tr'); const taskData = { ...row.dataset }; const originalHEP = parseFloat(taskData.hep); const preventionEffectList = document.getElementById('preventionEffectList'); preventionEffectList.innerHTML = ''; document.querySelector('#preventionEffectModalTitle .task-name-display').textContent = `[${taskData.name}]`; const psfKeys = Object.keys(hepWeights);
+        for (const key of psfKeys) {
+            const currentScore = parseInt(taskData[key]); const newRow = preventionEffectList.insertRow(); newRow.insertCell(0).textContent = psfNames[key]; newRow.insertCell(1).textContent = currentScore; const effectCell = newRow.insertCell(2); const targetCell = newRow.insertCell(3); let effectHtml = ''; let targetHtml = '';
+            if (currentScore > 1) {
+                const targetScores = Array.from({length: currentScore - 1}, (_, i) => currentScore - 1 - i); let effectParts = []; let targetParts = [];
+                targetScores.forEach(targetScore => { const tempScores = { ...taskData }; for (const k in tempScores) { if (!isNaN(parseInt(tempScores[k]))) { tempScores[k] = parseInt(tempScores[k]); } } tempScores[key] = targetScore; const newFinalHEP = calculateHEP(tempScores); const preventionEffect = originalHEP - newFinalHEP; effectParts.push(`${targetScore}점 : <span style="font-weight: bold; color: var(--primary-color);">${preventionEffect.toFixed(4)} 감소(↓)</span>`); targetParts.push(`<label><input type="radio" name="${key}-target" value="${targetScore}" onchange="checkAllRadios()">${targetScore}점</label>`); });
+                effectHtml = effectParts.join('<br>'); targetHtml = `<div class="prevention-effect-vertical">${targetParts.join('')}</div>`;
+            }
+            effectCell.innerHTML = effectHtml || '-'; targetCell.innerHTML = targetHtml || '-'; if (!effectHtml) effectCell.style.color = '#999'; if (!targetHtml) targetCell.style.color = '#999';
+        }
+        document.getElementById('preventionBtn').disabled = true; document.getElementById('preventionEffectModal').style.display = 'flex';
+    }
+    function closePreventionEffectModal() { document.getElementById('preventionEffectModal').style.display = 'none'; }
+    function checkAllRadios() {
+        const targetRows = document.querySelectorAll('#preventionEffectList tr'); let hasSelectableTarget = false; let allSelected = true;
+        targetRows.forEach(row => { const targetCell = row.cells[3]; if (targetCell.querySelector('input[type="radio"]')) { hasSelectableTarget = true; if (!targetCell.querySelector('input[type="radio"]:checked')) { allSelected = false; } } });
+        document.getElementById('preventionBtn').disabled = !(hasSelectableTarget && allSelected);
+    }
+    
+    // 여러 항목 선택을 허용하고, 선택된 항목 수에 따라 버튼 상태를 업데이트하는 로직 (변경 없음)
+    function handleCheckboxChange() {
+        updateMoveButtonsState();
+    }
+    function updateMoveButtonsState() {
+        const checkedBoxes = document.querySelectorAll('input[name="task_select"]:checked');
+        const moveUpBtn = document.getElementById('moveUpBtn');
+        const moveDownBtn = document.getElementById('moveDownBtn');
+        const effectBtn = document.getElementById('preventionEffectBtn');
+        const managePsfBtn = document.getElementById('managePsfBtn');
+        const manageSelectedTasksBtn = document.getElementById('manageSelectedTasksBtn');
+
+        document.querySelectorAll('tbody tr').forEach(row => row.classList.remove('selected'));
+        checkedBoxes.forEach(box => box.closest('tr').classList.add('selected'));
+
+        const isSingleSelection = checkedBoxes.length === 1;
+        const isAnySelection = checkedBoxes.length > 0;
+
+        // 단일 선택 시에만 활성화되는 버튼
+        moveUpBtn.disabled = !isSingleSelection || !checkedBoxes[0].closest('tr').previousElementSibling;
+        moveDownBtn.disabled = !isSingleSelection || !checkedBoxes[0].closest('tr').nextElementSibling;
+        effectBtn.disabled = !isSingleSelection;
+        
+        // 하나 이상 선택 시 활성화되는 버튼
+        managePsfBtn.disabled = !isAnySelection;
+        manageSelectedTasksBtn.disabled = !isAnySelection;
+    }
+
+    function moveRow(direction) { const checkedBox = document.querySelector('input[name="task_select"]:checked'); if (!checkedBox) return; const row = checkedBox.closest('tr'); if (direction === 'up' && row.previousElementSibling) { row.parentNode.insertBefore(row, row.previousElementSibling); } else if (direction === 'down' && row.nextElementSibling) { row.parentNode.insertBefore(row.nextElementSibling, row); } updateMoveButtonsState(); }
+    function saveTableAsCsv() {
+        const table = document.getElementById('taskTable'); const rows = table.querySelectorAll('tbody tr'); let csv = "작업 단계,성공 확률\n";
+        rows.forEach(row => { if (row.id === 'no-task-message') return; const taskName = `"${row.dataset.name.replace(/"/g, '""')}"`; const successProbability = row.dataset.successProbability; csv += `${taskName},${successProbability}\n`; });
+        const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'hep_results.csv'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        generateSurveyQuestions();
+        const allPsfKeys = Object.keys(psfNames);
+        allPsfKeys.forEach(key => {
+            if (preventionData[key]) {
+                if (!preventionData[key][2]) preventionData[key][2] = ["<strong>(" + psfNames[key] + ")</strong> 해당 점수에 대한 기본 관리적 개선안이 필요합니다."];
+                if (!preventionData[key][3]) preventionData[key][3] = ["<strong>(" + psfNames[key] + ")</strong> 해당 점수에 대한 심화 관리적 개선안이 필요합니다."];
+                if (!preventionData[key][4]) preventionData[key][4] = ["<strong>(" + psfNames[key] + ")</strong> 해당 점수에 대한 기본 공학적 개선안이 필요합니다."];
+                if (!preventionData[key][5]) preventionData[key][5] = ["<strong>(" + psfNames[key] + ")</strong> 해당 점수에 대한 심화 공학적 개선안이 필요합니다."];
+            }
+        });
+        // --- [요청사항] 파일 불러오기 이벤트 리스너 추가 ---
+        document.getElementById('csvFileInput').addEventListener('change', loadDataFromCsv);
+    });
+    
+    // --- [요청사항 수정 1] 인쇄 기능 개선 ---
+    // 기존 웹페이지의 복잡한 CSS 대신 인쇄에 최적화된 단순한 스타일을 적용하여 레이아웃 깨짐 현상을 해결합니다.
+    function printChecklist() {
+        const printContentNode = document.getElementById('preventionModal').querySelector('.modal-content').cloneNode(true);
+        const actions = printContentNode.querySelector('.modal-actions');
+        if (actions) actions.remove();
+
+        // 인쇄용 스타일 정의
+        const printStyles = `
+            body { font-family: 'Malgun Gothic', sans-serif; margin: 20px; line-height: 1.6; color: #333; }
+            h2 { text-align: center; color: #005A9C; margin-bottom: 25px; }
+            .task-name-display { color: #8A2BE2; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 1rem; }
+            th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
+            th { background-color: #f2f2f2; color: #005A9C; font-weight: bold; }
+            td:nth-child(2) { text-align: left; } /* 체크리스트 항목은 왼쪽 정렬 */
+            .check-box { font-size: 1.5rem; vertical-align: middle; }
+            p { font-size: 0.8em; color: #555; text-align: right; margin-top: 10px; }
+            strong { font-weight: bold; }
+        `;
+
+        const printWindow = window.open('', '_blank');
+        
+        printWindow.document.open();
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>휴먼에러 예방 체크리스트 인쇄</title>
+                    <style>${printStyles}</style>
+                </head>
+                <body>
+                    ${printContentNode.innerHTML}
+                </body>
+            </html>
+        `);
+        printWindow.document.close();
+        
+        // 콘텐츠 로딩 후 인쇄 및 창 닫기
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }, 250);
+    }
+
+
+    // --- [요청사항 수정 2] 관리 차트의 관리선 및 라벨 색상 변경 ---
+    function openHepManagementModal() {
+        const checkedBoxes = document.querySelectorAll('input[name="task_select"]:checked');
+        const tasks = [];
+        checkedBoxes.forEach(box => {
+            const row = box.closest('tr');
+            if (row.dataset.hep) {
+                tasks.push({ name: row.dataset.name, hep: parseFloat(row.dataset.hep) });
+            }
+        });
+
+        const managementModal = document.getElementById('hepManagementModal');
+        const canvasContainer = document.getElementById('hepChartCanvas').parentNode;
+        const noChartMessage = document.getElementById('no-chart-message');
+        const statsContainer = document.getElementById('managementStats');
+        
+        if (tasks.length === 0) {
+            canvasContainer.style.display = 'none';
+            statsContainer.style.display = 'none';
+            noChartMessage.style.display = 'block';
+            managementModal.style.display = 'flex';
+            return;
+        }
+
+        canvasContainer.style.display = 'block';
+        statsContainer.style.display = 'flex';
+        noChartMessage.style.display = 'none';
+
+        const labels = tasks.map(t => t.name);
+        const hepValues = tasks.map(t => t.hep);
+        
+        const sum = hepValues.reduce((a, b) => a + b, 0);
+        const avg = sum / tasks.length;
+        const stdDev = tasks.length > 1 ? Math.sqrt(hepValues.map(x => Math.pow(x - avg, 2)).reduce((a, b) => a + b, 0) / (tasks.length - 1)) : 0;
+        const ucl = avg + 2 * stdDev;
+        const lcl = Math.max(0, avg - 2 * stdDev);
+
+        statsContainer.innerHTML = `
+            <div class="stat-avg"><span>평균 (AVG)</span><br><span>${avg.toFixed(4)}</span></div>
+            <div class="stat-stddev"><span>표준편차 (σ)</span><br><span>${stdDev.toFixed(4)}</span></div>
+            <div class="stat-ucl"><span>상한관리선 (UCL, +2σ)</span><br><span>${ucl.toFixed(4)}</span></div>
+            <div class="stat-lcl"><span>하한관리선 (LCL, -2σ)</span><br><span>${lcl.toFixed(4)}</span></div>`;
+
+        const barColors = hepValues.map(hep => {
+            if (hep > ucl) return 'rgba(217, 48, 37, 0.7)';
+            if (hep > avg) return 'rgba(255, 193, 7, 0.7)';
+            return 'rgba(40, 167, 69, 0.7)';
+        });
+
+        const suggestedMax = Math.max(...hepValues, ucl) * 1.1;
+        const ctx = document.getElementById('hepChartCanvas').getContext('2d');
+        if (hepChartInstance) {
+            hepChartInstance.destroy();
+        }
+        
+        hepChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: 'HEP',
+                        data: hepValues,
+                        backgroundColor: barColors,
+                        borderColor: barColors.map(color => color.replace('0.7', '1')),
+                        borderWidth: 1,
+                        order: 1
+                    },
+                    {
+                        type: 'line',
+                        label: '평균',
+                        data: Array(labels.length).fill(avg),
+                        borderColor: 'var(--primary-color)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        borderDash: [5, 5],
+                        order: 0
+                    },
+                    {
+                        type: 'line',
+                        label: 'UCL (+2σ)',
+                        data: Array(labels.length).fill(ucl),
+                        // 요청사항: 상한선 붉은색
+                        borderColor: 'red',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        order: 0
+                    },
+                    {
+                        type: 'line',
+                        label: 'LCL (-2σ)',
+                        data: Array(labels.length).fill(lcl),
+                        // 요청사항: 하한선 녹색
+                        borderColor: 'green',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        order: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: suggestedMax
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            filter: item => item.datasetIndex !== 0
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed.y !== null) { label += context.parsed.y.toFixed(4); }
+                                return label;
+                            }
+                        }
+                    }
+                }
+            },
+            // 관리선 위에 값을 표시하는 커스텀 플러그인
+            plugins: [{
+                id: 'lineValueLabels',
+                afterDatasetsDraw: (chart) => {
+                    const { ctx, chartArea: { top, right, bottom, left, width }, scales: { y } } = chart;
+                    
+                    chart.data.datasets.forEach((dataset, index) => {
+                        if (dataset.type === 'line') {
+                            const meta = chart.getDatasetMeta(index);
+                            const yPos = meta.data[0].y;
+                            
+                            if (yPos < top || yPos > bottom) return;
+                            
+                            const value = dataset.data[0];
+                            const labelText = `${dataset.label}: ${value.toFixed(4)}`;
+                            
+                            ctx.save();
+                            ctx.font = '600 12px sans-serif';
+                            ctx.textAlign = 'center';
+                            ctx.textBaseline = 'bottom';
+                            const xPos = left + (width / 2);
+
+                            // 요청사항: UCL은 붉은 글씨, LCL은 녹색 글씨로 설정
+                            if (dataset.label.includes('UCL')) {
+                                ctx.fillStyle = 'red';
+                            } else if (dataset.label.includes('LCL')) {
+                                ctx.fillStyle = 'green';
+                            } else {
+                                ctx.fillStyle = '#333333'; // 평균선은 검은색 계열
+                            }
+                            
+                            ctx.fillText(labelText, xPos, yPos - 2);
+                            ctx.restore();
+                        }
+                    });
+                }
+            }]
+        });
+        
+        managementModal.style.display = 'flex';
+    }
+    function closeHepManagementModal() { document.getElementById('hepManagementModal').style.display = 'none'; }
+
+    // PSF 관리 모달 (변경 없음)
+    function openPsfManagementModal() {
+        const checkedBoxes = document.querySelectorAll('input[name="task_select"]:checked');
+        const psfKeys = Object.keys(hepWeights);
+        const psfContributions = {};
+        psfKeys.forEach(key => psfContributions[key] = 0);
+        
+        let selectionCount = 0;
+        checkedBoxes.forEach(box => {
+            const row = box.closest('tr');
+            if (row.dataset.hep) {
+                selectionCount++;
+                psfKeys.forEach(key => {
+                    const score = parseInt(row.dataset[key]);
+                    const influenceWeight = psfInfluenceWeights[key];
+                    const scaledValue = scaleEPC(score, hepWeights[key][0], hepWeights[key][1]);
+                    const contribution = scaledValue * influenceWeight;
+                    psfContributions[key] += contribution;
+                });
+            }
+        });
+
+        const modal = document.getElementById('psfManagementModal');
+        const canvasContainer = document.getElementById('psfChartCanvas').parentNode;
+        const noChartMessage = document.getElementById('no-psf-chart-message');
+        
+        if (selectionCount === 0) {
+            canvasContainer.style.display = 'none';
+            noChartMessage.style.display = 'block';
+            modal.style.display = 'flex';
+            return;
+        }
+
+        canvasContainer.style.display = 'block';
+        noChartMessage.style.display = 'none';
+
+        psfKeys.forEach(key => {
+            psfContributions[key] /= selectionCount;
+        });
+
+        const psfData = psfKeys.map(key => ({
+            name: psfNames[key],
+            score: psfContributions[key]
+        })).sort((a, b) => b.score - a.score);
+
+        const labels = psfData.map(d => d.name);
+        const scores = psfData.map(d => d.score);
+        
+        const backgroundColors = [
+            'rgba(217, 48, 37, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(253, 126, 20, 0.7)', 'rgba(40, 167, 69, 0.7)', 'rgba(40, 167, 69, 0.7)', 'rgba(40, 167, 69, 0.7)'
+        ];
+        const borderColors = backgroundColors.map(color => color.replace('0.7', '1'));
+        const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
+
+        const ctx = document.getElementById('psfChartCanvas').getContext('2d');
+        if (psfChartInstance) {
+            psfChartInstance.destroy();
+        }
+        psfChartInstance = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '평균 PSF 기여도',
+                    data: scores,
+                    backgroundColor: backgroundColors,
+                    borderColor: borderColors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) { return `기여도: ${(context.parsed.y*100).toFixed(2)}%`; }
+                        }
+                    },
+                    customPsfDatalabels: {
+                        formatter: (value) => (value*100).toFixed(2)+'%',
+                        color: '#333',
+                        font: { weight: 'bold' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        suggestedMax: maxScore * 1.2 
+                    }
+                }
+            },
+            plugins: [{
+                id: 'customPsfDatalabels',
+                afterDatasetsDraw(chart, args, pluginOptions) {
+                    const { ctx } = chart;
+                    
+                    const font = pluginOptions.font || {};
+                    const weight = font.weight || 'normal';
+                    const size = font.size || 12;
+                    const family = font.family || 'sans-serif';
+
+                    ctx.save();
+                    ctx.font = `${weight} ${size}px ${family}`;
+                    ctx.fillStyle = pluginOptions.color || '#000';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    chart.data.datasets.forEach((dataset, i) => {
+                        const meta = chart.getDatasetMeta(i);
+                        meta.data.forEach((bar, index) => {
+                            const data = dataset.data[index];
+                            const label = pluginOptions.formatter ? pluginOptions.formatter(data) : data;
+                            ctx.fillText(label, bar.x, bar.y - 5);
+                        });
+                    });
+                    ctx.restore();
+                }
+            }]
+        });
+
+        modal.style.display = 'flex';
+    }
+    function closePsfManagementModal() { document.getElementById('psfManagementModal').style.display = 'none'; }
+
+
+    // --- [사용자 요청] 전체 데이터 저장 및 불러오기 기능 ---
+
+    /**
+     * 테이블의 모든 데이터를 CSV 파일로 저장합니다.
+     * 파일명은 '전체 자료입력_YYYYMMDD_HHMMSS.csv' 형식입니다.
+     */
+    function saveAllDataAsCsv() {
+        const table = document.getElementById('taskTable');
+        const rows = table.querySelectorAll('tbody tr');
+
+        if (rows.length === 1 && rows[0].id === 'no-task-message') {
+            console.log("저장할 데이터가 없습니다."); // alert() 대신 콘솔 로그 사용
+            return;
+        }
+
+        const headers = ["연번", "작업명", "가능성", "중대성", "난이도", "환경", "집중도", "절차", "시간압박", "경험", "팀워크", "작업자 상태", "HEP", "성공 확률"];
+        const keys = ["name", "likelihood", "severity", "difficulty", "environment", "attention", "procedure", "timePressure", "experience", "teamwork", "condition", "hep", "successProbability"];
+
+        let csvContent = "\ufeff"; // For Excel UTF-8 compatibility
+        csvContent += headers.join(',') + '\n';
+
+        rows.forEach((row, index) => {
+            if (row.id === 'no-task-message') return;
+
+            const rowData = [(index + 1).toString()]; // 연번 추가
+            keys.forEach(key => {
+                let value = row.dataset[key] || '';
+                // 쉼표가 포함된 작업명은 큰따옴표로 묶음
+                if (key === 'name' && value.includes(',')) {
+                    value = `"${value.replace(/"/g, '""')}"`;
+                }
+                rowData.push(value);
+            });
+            csvContent += rowData.join(',') + '\n';
+        });
+
+        const now = new Date();
+        const timestamp = `${now.getFullYear()}${(now.getMonth() + 1).toString().padStart(2, '0')}${now.getDate().toString().padStart(2, '0')}_${now.getHours().toString().padStart(2, '0')}${now.getMinutes().toString().padStart(2, '0')}${now.getSeconds().toString().padStart(2, '0')}`;
+        const filename = `전체 자료입력_${timestamp}.csv`;
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    /**
+     * CSV 파일을 읽어 테이블에 데이터를 불러옵니다.
+     * @param {Event} event - 파일 input의 change 이벤트
+     */
+    function loadDataFromCsv(event) {
+        const file = event.target.files[0];
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const text = e.target.result;
+            const lines = text.split(/\r?\n/).filter(line => line.trim() !== ''); // Handle both CRLF and LF
+
+            if (lines.length <= 1) {
+                console.log("파일에 불러올 데이터가 없습니다.");
+                return;
+            }
+
+            const headerLine = lines[0].trim();
+            if (!headerLine.startsWith("연번,작업명")) {
+                console.error("올바른 형식의 '전체 입력자료' 파일이 아닙니다.");
+                // 사용자에게 피드백을 주기 위한 UI 요소가 있다면 여기에 추가
+                return;
+            }
+
+            const tableBody = document.getElementById('taskTable').querySelector('tbody');
+            tableBody.innerHTML = ''; // 기존 데이터 삭제
+
+            // 헤더를 제외한 데이터 라인을 순회
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+
+                // 쉼표를 기준으로 분리하되, 큰따옴표 안의 쉼표는 무시
+                const rowValues = line.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g) || [];
+
+                // 각 값을 큰따옴표 제거 및 이스케이프된 큰따옴표 복원
+                const cleanedValues = rowValues.map(val => {
+                    if (val.startsWith('"') && val.endsWith('"')) {
+                        return val.slice(1, -1).replace(/""/g, '"');
+                    }
+                    return val;
+                });
+                
+                // 데이터 매핑 (연번 제외)
+                const taskData = {
+                    name: cleanedValues[1],
+                    likelihood: cleanedValues[2],
+                    severity: cleanedValues[3],
+                    difficulty: cleanedValues[4],
+                    environment: cleanedValues[5],
+                    attention: cleanedValues[6],
+                    procedure: cleanedValues[7],
+                    timePressure: cleanedValues[8],
+                    experience: cleanedValues[9],
+                    teamwork: cleanedValues[10],
+                    condition: cleanedValues[11],
+                    hep: cleanedValues[12],
+                    successProbability: cleanedValues[13]
+                };
+
+                // 빈 데이터가 아닌 경우에만 테이블에 추가
+                if (taskData.name) {
+                    addTaskToTable(taskData);
+                }
+            }
+        };
+        reader.readAsText(file, 'UTF-8');
+        event.target.value = ''; // 동일 파일 재선택을 위해 값 초기화
+    }
+
+    // --- [사용자 요청] 파일 메뉴 드롭다운 기능 ---
+    /**
+     * 모든 드롭다운 메뉴를 닫습니다.
+     */
+    function closeAllDropdowns() {
+        const dropdowns = document.getElementsByClassName("dropdown-content");
+        for (let i = 0; i < dropdowns.length; i++) {
+            const openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+
+    // 파일 메뉴 버튼 클릭 시 드롭다운 토글
+    document.getElementById('fileMenuBtn').addEventListener('click', function(event) {
+        event.stopPropagation(); // 이벤트 전파 중단
+        const dropdown = document.getElementById("fileMenuDropdown");
+        // 다른 드롭다운이 열려있으면 닫고, 현재 드롭다운을 토글
+        const isCurrentlyShown = dropdown.classList.contains('show');
+        closeAllDropdowns();
+        if (!isCurrentlyShown) {
+            dropdown.classList.add('show');
+        }
+    });
+
+    // 화면의 다른 곳을 클릭하면 드롭다운 메뉴 닫기
+    window.onclick = function(event) {
+        if (!event.target.matches('#fileMenuBtn')) {
+            closeAllDropdowns();
+        }
+    }
+</script>
+</body>
+</html>
